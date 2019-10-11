@@ -182,10 +182,10 @@ void declareEigenTypes(py::module & m) {
                 return Eigen::Quaterniond::FromTwoVectors(a, b);
             })
 
-        .def("x", (double (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::x)
-        .def("y", (double (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::y)
-        .def("z", (double (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::z)
-        .def("w", (double (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::w)
+        .def("x", (const double&  (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::x)
+        .def("y", (const double&  (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::y)
+        .def("z", (const double&  (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::z)
+        .def("w", (const double&  (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::w)
 
         .def("vec", (const Eigen::VectorBlock<const Eigen::Quaterniond::Coefficients,3> (Eigen::Quaterniond::*) () const) &Eigen::Quaterniond::vec)
 
@@ -285,7 +285,6 @@ void declareEigenTypes(py::module & m) {
 
     /*templatedEigenTransform<double, 2, Eigen::Projective>(m, "Projective2d");
     templatedEigenTransform<double, 3, Eigen::Projective>(m, "Projective3d");
-
     templatedEigenTransform<double, 2, Eigen::Affine>(m, "Affine2d");
     templatedEigenTransform<double, 3, Eigen::Affine>(m, "Affine3d");*/
 
