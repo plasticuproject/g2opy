@@ -5,7 +5,7 @@ This is a python binding of graph optimization C++ framework [g2o](https://githu
 > g2o is an open-source C++ framework for optimizing graph-based nonlinear error functions. g2o has been designed to be easily extensible to a wide range of problems and a new problem typically can be specified in a few lines of code. The current implementation provides solutions to several variants of SLAM and BA.  
 A wide range of problems in robotics as well as in computer-vision involve the minimization of a non-linear error function that can be represented as a graph. Typical instances are simultaneous localization and mapping (SLAM) or bundle adjustment (BA). The overall goal in these problems is to find the configuration of parameters or state variables that maximally explain a set of measurements affected by Gaussian noise. g2o is an open-source C++ framework for such nonlinear least squares problems. g2o has been designed to be easily extensible to a wide range of problems and a new problem typically can be specified in a few lines of code. The current implementation provides solutions to several variants of SLAM and BA.
 
-Currently, this project doesn't support writing user-defined types in python, but the predefined types are enough to implement the most common algorithms, say **PnP, ICP, Bundle Adjustment and Pose Graph Optimization** in 2d or 3d scenarios. g2o's visualization part is not wrapped, if you want to visualize point clouds or graph, you can give [pangolin](https://github.com/uoip/pangolin) a try, it's a python binding of C++ library [Pangolin](http://github.com/stevenlovegrove/Pangolin).
+Currently, this project doesn't support writing user-defined types in python, but the predefined types are enough to implement the most common algorithms, say **PnP, ICP, Bundle Adjustment and Pose Graph Optimization** in 2d or 3d scenarios. g2o's visualization part is not wrapped, if you want to visualize point clouds or graph, you can give [pangolin](https://github.com/plasticuproject/pangolin) a try, it's a python binding of C++ library [Pangolin](http://github.com/stevenlovegrove/Pangolin).
 
 For convenience, some frequently used Eigen types (Quaternion, Rotation2d, Isometry3d, Isometry2d, AngleAxis) are packed into this library.  
 In the contrib folder, I collected some useful 3rd-party C++ code related to g2o, like robust pose graph optimization library [vertigo](http://www.openslam.org/vertigo), stereo sba and smooth estimate propagator from [sptam](https://github.com/lrse/sptam).
@@ -18,7 +18,7 @@ In the contrib folder, I collected some useful 3rd-party C++ code related to g2o
 
 ## Installation
 ```
-git clone https://github.com/uoip/g2opy.git
+git clone https://github.com/plasticuproject/g2opy.git
 cd g2opy
 mkdir build
 cd build
