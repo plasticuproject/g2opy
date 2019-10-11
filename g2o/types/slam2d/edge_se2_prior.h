@@ -49,17 +49,19 @@ namespace g2o {
         _error = delta.toVector();
       }
 
+#if    0 // this is untested
       virtual void linearizeOplus() {
         _jacobianOplusXi.setZero();
         _jacobianOplusXi.block<2,2>(0,0)=_inverseMeasurement.rotation().toRotationMatrix();
         _jacobianOplusXi(2,2)=1.;
       }
+#endif
 
       virtual void setMeasurement(const SE2& m);
-      virtual bool setMeasurementData(const number_t* d);
+      virtual bool setMeasurementData(const double* d);
 
-      virtual bool getMeasurementData(number_t* d) const {
-        Eigen::Map<Vector3> v(d);
+      virtual bool getMeasurementData(double* d) const {
+        Eigen::Map<Vector3D> v(d);
         v = _measurement.toVector();
         return true;
       }
@@ -69,7 +71,7 @@ namespace g2o {
       virtual bool read(std::istream& is);
       virtual bool write(std::ostream& os) const;
 
-      virtual number_t initialEstimatePossible(const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) { return 1.;}
+      virtual double initialEstimatePossible(const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) { return 1.;}
       virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to);
 
     protected:

@@ -48,14 +48,14 @@ namespace deprecated {
       virtual bool read(std::istream& is);
       virtual bool write(std::ostream& os) const;
 
-      const Matrix3& Kcam() const { return _Kcam;}
-      const Matrix3& invKcam() const { return _invKcam;}
-      const Matrix3& Kcam_inverseOffsetR() const { return _Kcam_inverseOffsetR;}
+      const Eigen::Matrix3d& Kcam() const { return _Kcam;}
+      const Eigen::Matrix3d& invKcam() const { return _invKcam;}
+      const Eigen::Matrix3d& Kcam_inverseOffsetR() const { return _Kcam_inverseOffsetR;}
 
     protected:
-      Matrix3 _Kcam;
-      Matrix3 _invKcam;
-      Matrix3 _Kcam_inverseOffsetR;
+      Eigen::Matrix3d _Kcam;
+      Eigen::Matrix3d _invKcam;
+      Eigen::Matrix3d _Kcam_inverseOffsetR;
   };
 
   class G2O_DEPRECATED_TYPES_SLAM3D_API CacheCamera: public CacheSE3Offset {
@@ -64,11 +64,11 @@ namespace deprecated {
     //! parameters of the camera
     const ParameterCamera* camParams() const {return params;}
     //! return the world to image transform
-    const Affine3& w2i() const {return _w2i;}
+    const Eigen::Affine3d& w2i() const {return _w2i;}
   protected:
     virtual void updateImpl();
     virtual bool resolveDependancies();
-    Affine3 _w2i; ///< world to image transform
+    Eigen::Affine3d _w2i; ///< world to image transform
     ParameterCamera* params;
   };
 

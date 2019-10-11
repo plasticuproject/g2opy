@@ -42,10 +42,10 @@ namespace g2o {
   using namespace std;
 
   // point to camera projection, monocular
-  EdgeSE3PointXYZ::EdgeSE3PointXYZ() : BaseBinaryEdge<3, Vector3, VertexSE3, VertexPointXYZ>() {
+  EdgeSE3PointXYZ::EdgeSE3PointXYZ() : BaseBinaryEdge<3, Vector3D, VertexSE3, VertexPointXYZ>() {
     information().setIdentity();
     J.fill(0);
-    J.block<3,3>(0,0) = -Matrix3::Identity();
+    J.block<3,3>(0,0) = -Matrix3D::Identity();
     cache = 0;
     offsetParam = 0;
     resizeParameters(1);
@@ -65,7 +65,7 @@ namespace g2o {
     is >> pId;
     setParameterId(0, pId);
     // measured keypoint
-    Vector3 meas;
+    Vector3D meas;
     for (int i=0; i<3; i++) is >> meas[i];
     setMeasurement(meas);
     // information matrix is the identity for features, could be changed to allow arbitrary covariances    
@@ -101,7 +101,7 @@ namespace g2o {
     //VertexSE3 *cam = static_cast<VertexSE3*>(_vertices[0]);
     VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
 
-    Vector3 perr = cache->w2n() * point->estimate();
+    Vector3D perr = cache->w2n() * point->estimate();
 
     // error, which is backwards from the normal observed - calculated
     // _measurement is the measured projection
@@ -113,7 +113,7 @@ namespace g2o {
     //VertexSE3 *cam = static_cast<VertexSE3 *>(_vertices[0]);
     VertexPointXYZ *vp = static_cast<VertexPointXYZ *>(_vertices[1]);
     
-    Vector3 Zcam = cache->w2l() * vp->estimate();
+    Vector3D Zcam = cache->w2l() * vp->estimate();
     
     //  J(0,3) = -0.0;
     J(0,4) = -2*Zcam(2);
@@ -129,7 +129,7 @@ namespace g2o {
 
     J.block<3,3>(0,6) = cache->w2l().rotation();
 
-    Eigen::Matrix<number_t,3,9,Eigen::ColMajor> Jhom = offsetParam->inverseOffset().rotation() * J;
+    Eigen::Matrix<double,3,9,Eigen::ColMajor> Jhom = offsetParam->inverseOffset().rotation() * J;
 
     _jacobianOplusXi = Jhom.block<3,6>(0,0);
     _jacobianOplusXj = Jhom.block<3,3>(0,6);
@@ -145,21 +145,21 @@ namespace g2o {
     VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
 
     // calculate the projection
-    const Vector3 &pt = point->estimate();
+    const Vector3D &pt = point->estimate();
     // SE3OffsetCache* vcache = (SE3OffsetCache*) cam->getCache(_cacheIds[0]);
     // if (! vcache){
     //   cerr << "fatal error in retrieving cache" << endl;
     // }
 
-    Vector3 perr = cache->w2n() * pt;
+    Vector3D perr = cache->w2n() * pt;
     _measurement = perr;
     return true;
   }
 
 
-  void EdgeSE3PointXYZ::initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to)
+  void EdgeSE3PointXYZ::initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* /*to_*/)
   {
-    (void) from; (void) to;
+    (void) from;
     assert(from.size() == 1 && from.count(_vertices[0]) == 1 && "Can not initialize VertexDepthCam position by VertexTrackXYZ");
 
     VertexSE3 *cam = dynamic_cast<VertexSE3*>(_vertices[0]);
@@ -169,7 +169,7 @@ namespace g2o {
     //   cerr << "fatal error in retrieving cache" << endl;
     // }
     // SE3OffsetParameters* params=vcache->params;
-    Vector3 p=_measurement;
+    Vector3D p=_measurement;
     point->setEstimate(cam->estimate() * (offsetParam->offset() * p));
   }
 
@@ -179,7 +179,7 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE3PointXYZDrawAction::operator()(HyperGraph::HyperGraphElement* element,
                HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     refreshPropertyPtrs(params_);
     if (! _previousParams)
       return this;
@@ -192,7 +192,7 @@ namespace g2o {
     VertexPointXYZ* toEdge   = static_cast<VertexPointXYZ*>(e->vertex(1));
     if (! fromEdge || ! toEdge)
       return this;
-    Isometry3 fromTransform=fromEdge->estimate() * e->offsetParameter()->offset();
+    Isometry3D fromTransform=fromEdge->estimate() * e->offsetParameter()->offset();
     glColor3f(LANDMARK_EDGE_COLOR);
     glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_LIGHTING);

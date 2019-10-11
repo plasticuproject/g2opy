@@ -39,22 +39,24 @@ namespace types_six_dof_expmap {
 void init();
 }
 
+typedef Eigen::Matrix<double, 6, 6, Eigen::ColMajor> Matrix6d;
+
 class G2O_TYPES_SBA_API CameraParameters : public g2o::Parameter
 {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     CameraParameters();
 
-    CameraParameters(number_t focal_length,
-        const Vector2 & principle_point,
-        number_t baseline)
+    CameraParameters(double focal_length,
+        const Vector2D & principle_point,
+        double baseline)
       : focal_length(focal_length),
       principle_point(principle_point),
       baseline(baseline){}
 
-    Vector2 cam_map (const Vector3 & trans_xyz) const;
+    Vector2D cam_map (const Vector3D & trans_xyz) const;
 
-    Vector3 stereocam_uvu_map (const Vector3 & trans_xyz) const;
+    Vector3D stereocam_uvu_map (const Vector3D & trans_xyz) const;
 
     virtual bool read (std::istream& is){
       is >> focal_length;
@@ -72,9 +74,9 @@ class G2O_TYPES_SBA_API CameraParameters : public g2o::Parameter
       return true;
     }
 
-    number_t focal_length;
-    Vector2 principle_point;
-    number_t baseline;
+    double focal_length;
+    Vector2D principle_point;
+    double baseline;
 };
 
 /**
@@ -95,8 +97,8 @@ public:
     _estimate = SE3Quat();
   }
 
-  virtual void oplusImpl(const number_t* update_)  {
-    Eigen::Map<const Vector6> update(update_);
+  virtual void oplusImpl(const double* update_)  {
+    Eigen::Map<const Vector6d> update(update_);
     setEstimate(SE3Quat::exp(update)*estimate());
   }
 };
@@ -127,7 +129,7 @@ class G2O_TYPES_SBA_API EdgeSE3Expmap : public BaseBinaryEdge<6, SE3Quat, Vertex
 };
 
 
-class G2O_TYPES_SBA_API EdgeProjectXYZ2UV : public  BaseBinaryEdge<2, Vector2, VertexSBAPointXYZ, VertexSE3Expmap>{
+class G2O_TYPES_SBA_API EdgeProjectXYZ2UV : public  BaseBinaryEdge<2, Vector2D, VertexSBAPointXYZ, VertexSE3Expmap>{
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
@@ -142,7 +144,7 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UV : public  BaseBinaryEdge<2, Vector2, V
       const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
       const CameraParameters * cam
         = static_cast<const CameraParameters *>(parameter(0));
-      Vector2 obs(_measurement);
+      Vector2D obs(_measurement);
       _error = obs-cam->cam_map(v1->estimate().map(v2->estimate()));
     }
 
@@ -152,7 +154,7 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UV : public  BaseBinaryEdge<2, Vector2, V
 };
 
 
-class G2O_TYPES_SBA_API EdgeProjectPSI2UV : public  g2o::BaseMultiEdge<2, Vector2>
+class G2O_TYPES_SBA_API EdgeProjectPSI2UV : public  g2o::BaseMultiEdge<2, Vector2D>
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -175,7 +177,7 @@ public:
 // U: left u
 // V: left v
 // U: right u
-class G2O_TYPES_SBA_API EdgeProjectXYZ2UVU : public  BaseBinaryEdge<3, Vector3, VertexSBAPointXYZ, VertexSE3Expmap>{
+class G2O_TYPES_SBA_API EdgeProjectXYZ2UVU : public  BaseBinaryEdge<3, Vector3D, VertexSBAPointXYZ, VertexSE3Expmap>{
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
@@ -190,7 +192,7 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UVU : public  BaseBinaryEdge<3, Vector3, 
       const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
       const CameraParameters * cam
         = static_cast<const CameraParameters *>(parameter(0));
-      Vector3 obs(_measurement);
+      Vector3D obs(_measurement);
       _error = obs-cam->stereocam_uvu_map(v1->estimate().map(v2->estimate()));
     }
     //  virtual void linearizeOplus();
@@ -198,7 +200,7 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UVU : public  BaseBinaryEdge<3, Vector3, 
 };
 
 // Projection using focal_length in x and y directions
-class G2O_TYPES_SBA_API EdgeSE3ProjectXYZ : public BaseBinaryEdge<2, Vector2, VertexSBAPointXYZ, VertexSE3Expmap> {
+class EdgeSE3ProjectXYZ : public BaseBinaryEdge<2, Vector2D, VertexSBAPointXYZ, VertexSE3Expmap> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -211,7 +213,7 @@ class G2O_TYPES_SBA_API EdgeSE3ProjectXYZ : public BaseBinaryEdge<2, Vector2, Ve
   void computeError() {
     const VertexSE3Expmap *v1 = static_cast<const VertexSE3Expmap *>(_vertices[1]);
     const VertexSBAPointXYZ *v2 = static_cast<const VertexSBAPointXYZ *>(_vertices[0]);
-    Vector2 obs(_measurement);
+    Vector2D obs(_measurement);
     _error = obs - cam_project(v1->estimate().map(v2->estimate()));
   }
 
@@ -223,13 +225,13 @@ class G2O_TYPES_SBA_API EdgeSE3ProjectXYZ : public BaseBinaryEdge<2, Vector2, Ve
 
   virtual void linearizeOplus();
 
-  Vector2 cam_project(const Vector3 &trans_xyz) const;
+  Vector2D cam_project(const Vector3D &trans_xyz) const;
 
-  number_t fx, fy, cx, cy;
+  double fx, fy, cx, cy;
 };
 
 // Edge to optimize only the camera pose
-class G2O_TYPES_SBA_API EdgeSE3ProjectXYZOnlyPose : public BaseUnaryEdge<2, Vector2, VertexSE3Expmap> {
+class EdgeSE3ProjectXYZOnlyPose : public BaseUnaryEdge<2, Vector2D, VertexSE3Expmap> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -241,25 +243,25 @@ class G2O_TYPES_SBA_API EdgeSE3ProjectXYZOnlyPose : public BaseUnaryEdge<2, Vect
 
   void computeError() {
     const VertexSE3Expmap *v1 = static_cast<const VertexSE3Expmap *>(_vertices[0]);
-    Vector2 obs(_measurement);
+    Vector2D obs(_measurement);
     _error = obs - cam_project(v1->estimate().map(Xw));
   }
 
   bool isDepthPositive() {
     const VertexSE3Expmap *v1 = static_cast<const VertexSE3Expmap *>(_vertices[0]);
-    return (v1->estimate().map(Xw))(2) > 0;
+    return (v1->estimate().map(Xw))(2) > 0.0;
   }
 
   virtual void linearizeOplus();
 
-  Vector2 cam_project(const Vector3 &trans_xyz) const;
+  Vector2D cam_project(const Vector3D &trans_xyz) const;
 
-  Vector3 Xw;
-  number_t fx, fy, cx, cy;
+  Vector3D Xw;
+  double fx, fy, cx, cy;
 };
 
 // Projection using focal_length in x and y directions stereo
-class G2O_TYPES_SBA_API EdgeStereoSE3ProjectXYZ : public BaseBinaryEdge<3, Vector3, VertexSBAPointXYZ, VertexSE3Expmap> {
+class EdgeStereoSE3ProjectXYZ : public BaseBinaryEdge<3, Vector3D, VertexSBAPointXYZ, VertexSE3Expmap> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -272,25 +274,25 @@ class G2O_TYPES_SBA_API EdgeStereoSE3ProjectXYZ : public BaseBinaryEdge<3, Vecto
   void computeError() {
     const VertexSE3Expmap *v1 = static_cast<const VertexSE3Expmap *>(_vertices[1]);
     const VertexSBAPointXYZ *v2 = static_cast<const VertexSBAPointXYZ *>(_vertices[0]);
-    Vector3 obs(_measurement);
+    Vector3D obs(_measurement);
     _error = obs - cam_project(v1->estimate().map(v2->estimate()), bf);
   }
 
   bool isDepthPositive() {
     const VertexSE3Expmap *v1 = static_cast<const VertexSE3Expmap *>(_vertices[1]);
     const VertexSBAPointXYZ *v2 = static_cast<const VertexSBAPointXYZ *>(_vertices[0]);
-    return (v1->estimate().map(v2->estimate()))(2) > 0;
+    return (v1->estimate().map(v2->estimate()))(2) > 0.0;
   }
 
   virtual void linearizeOplus();
 
-  Vector3 cam_project(const Vector3 &trans_xyz, const float &bf) const;
+  Vector3D cam_project(const Vector3D &trans_xyz, const float &bf) const;
 
-  number_t fx, fy, cx, cy, bf;
+  double fx, fy, cx, cy, bf;
 };
 
 // Edge to optimize only the camera pose stereo
-class G2O_TYPES_SBA_API EdgeStereoSE3ProjectXYZOnlyPose : public BaseUnaryEdge<3, Vector3, VertexSE3Expmap> {
+class EdgeStereoSE3ProjectXYZOnlyPose : public BaseUnaryEdge<3, Vector3D, VertexSE3Expmap> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -302,21 +304,21 @@ class G2O_TYPES_SBA_API EdgeStereoSE3ProjectXYZOnlyPose : public BaseUnaryEdge<3
 
   void computeError() {
     const VertexSE3Expmap *v1 = static_cast<const VertexSE3Expmap *>(_vertices[0]);
-    Vector3 obs(_measurement);
+    Vector3D obs(_measurement);
     _error = obs - cam_project(v1->estimate().map(Xw));
   }
 
   bool isDepthPositive() {
     const VertexSE3Expmap *v1 = static_cast<const VertexSE3Expmap *>(_vertices[0]);
-    return (v1->estimate().map(Xw))(2) > 0;
+    return (v1->estimate().map(Xw))(2) > 0.0;
   }
 
   virtual void linearizeOplus();
 
-  Vector3 cam_project(const Vector3 &trans_xyz) const;
+  Vector3D cam_project(const Vector3D &trans_xyz) const;
 
-  Vector3 Xw;
-  number_t fx, fy, cx, cy, bf;
+  Vector3D Xw;
+  double fx, fy, cx, cy, bf;
 };
 
 } // end namespace

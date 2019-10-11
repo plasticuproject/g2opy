@@ -31,7 +31,7 @@ double gauss_rand(double sigma) {
   return sigma * y * std::sqrt(-2.0 * log(r2) / r2);
 }
 
-Eigen::Isometry3d sample_noise_from_se3(const Vector6& cov ) { 
+Eigen::Isometry3d sample_noise_from_se3(const Vector6d& cov ) { 
   double nx = gauss_rand(cov(0));
   double ny = gauss_rand(cov(1));
   double nz = gauss_rand(cov(2));
@@ -88,8 +88,6 @@ protected:
 typedef std::vector<Sensor*> SensorVector;
 
 struct Robot: public WorldItem {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-
   Robot(OptimizableGraph* graph_) : WorldItem(graph_) {
     _planarMotion = false;
     _position = Isometry3d::Identity();
@@ -105,7 +103,7 @@ struct Robot: public WorldItem {
     if(_planarMotion) {
       // add a singleton constraint that locks the position of the robot on the plane
       EdgeSE3Prior* planeConstraint=new EdgeSE3Prior();
-      Matrix6 pinfo = Matrix6::Zero();
+      Matrix6d pinfo = Matrix6d::Zero();
       pinfo(2, 2) = 1e9;
       planeConstraint->setInformation(pinfo);
       planeConstraint->setMeasurement(Isometry3d::Identity());
@@ -118,9 +116,9 @@ struct Robot: public WorldItem {
       EdgeSE3* e = new EdgeSE3();
       Isometry3d noise = sample_noise_from_se3(_nmovecov);
       e->setMeasurement(delta * noise);
-      Matrix6 m = Matrix6::Identity();
+      Matrix6d m = Matrix6d::Identity();
       for(int i = 0; i < 6; ++i) {
-	      m(i, i) = 1.0 / (_nmovecov(i));
+	m(i, i) = 1.0 / (_nmovecov(i));
       }
       e->setInformation(m);
       e->vertices()[0] = vertex();
@@ -148,7 +146,7 @@ struct Robot: public WorldItem {
 
   Isometry3d _position;
   SensorVector _sensors;
-  Vector6 _nmovecov;
+  Vector6d _nmovecov;
   bool _planarMotion;
 };
 
@@ -189,8 +187,6 @@ struct LineItem : public WorldItem {
 };
 
 struct LineSensor : public Sensor {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-
   LineSensor(Robot* r, int offsetId, const Isometry3d& offset_) : Sensor(r) {
     _offsetVertex = new VertexSE3();
     _offsetVertex->setId(offsetId);
@@ -308,7 +304,7 @@ int main (int argc, char** argv) {
   Line3D line;
   std::cout << "Creating landmark line 1" << std::endl;
   LineItem* li = new LineItem(g, 1);
-  Vector6 liv;
+  Vector6d liv;
   liv << 0.0, 0.0, 5.0, 0.0, 1.0, 0.0;
   line = Line3D::fromCartesian(liv);
   static_cast<VertexLine3D*>(li->vertex())->setEstimate(line);

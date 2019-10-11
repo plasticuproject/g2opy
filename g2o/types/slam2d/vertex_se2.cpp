@@ -41,7 +41,7 @@ namespace g2o {
 
   bool VertexSE2::read(std::istream& is)
   {
-    Vector3 p;
+    Vector3D p;
     is >> p[0] >> p[1] >> p[2];
     setEstimate(p);
     return true;
@@ -49,7 +49,7 @@ namespace g2o {
 
   bool VertexSE2::write(std::ostream& os) const
   {
-    Vector3 p = estimate().toVector();
+    Vector3D p = estimate().toVector();
     os << p[0] << " " << p[1] << " " << p[2];
     return os.good();
   }
@@ -58,11 +58,11 @@ namespace g2o {
 
   HyperGraphElementAction* VertexSE2WriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
     if (!params || !params->os){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid output stream specified" << std::endl;
-      return nullptr;
+      return 0;
     }
 
     VertexSE2* v =  static_cast<VertexSE2*>(element);
@@ -93,7 +93,7 @@ namespace g2o {
   HyperGraphElementAction* VertexSE2DrawAction::operator()(HyperGraph::HyperGraphElement* element,
                  HyperGraphElementAction::Parameters* params_){
    if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     initializeDrawActionsCache();
     refreshPropertyPtrs(params_);
 

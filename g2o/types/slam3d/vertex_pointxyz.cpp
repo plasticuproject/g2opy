@@ -37,7 +37,7 @@
 namespace g2o {
 
   bool VertexPointXYZ::read(std::istream& is) {
-    Vector3 lv;
+    Vector3D lv;
     for (int i=0; i<3; i++)
       is >> lv[i];
     setEstimate(lv);
@@ -45,7 +45,7 @@ namespace g2o {
   }
 
   bool VertexPointXYZ::write(std::ostream& os) const {
-    Vector3 lv=estimate();
+    Vector3D lv=estimate();
     for (int i=0; i<3; i++){
       os << lv[i] << " ";
     }
@@ -73,7 +73,7 @@ namespace g2o {
                      HyperGraphElementAction::Parameters* params ){
 
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     initializeDrawActionsCache();
     refreshPropertyPtrs(params);
     if (! _previousParams)
@@ -107,11 +107,11 @@ namespace g2o {
   HyperGraphElementAction* VertexPointXYZWriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_ )
   {
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
     if (!params->os){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified" << std::endl;
-      return nullptr;
+      return 0;
     }
 
     VertexPointXYZ* v = static_cast<VertexPointXYZ*>(element);

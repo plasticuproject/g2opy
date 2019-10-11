@@ -38,13 +38,13 @@ namespace deprecated {
 
 
   // point to camera projection, monocular
-  EdgeSE3PointXYZDisparity::EdgeSE3PointXYZDisparity() : BaseBinaryEdge<3, Vector3, VertexSE3, VertexPointXYZ>() {
+  EdgeSE3PointXYZDisparity::EdgeSE3PointXYZDisparity() : BaseBinaryEdge<3, Eigen::Vector3d, VertexSE3, VertexPointXYZ>() {
     resizeParameters(1);
     installParameter(params, 0);
     information().setIdentity();
     information()(2,2)=1000.;
     J.fill(0);
-    J.block<3,3>(0,0) = -Matrix3::Identity();
+    J.block<3,3>(0,0) = -Eigen::Matrix3d::Identity();
   }
 
 
@@ -62,7 +62,7 @@ namespace deprecated {
     is >> pid;
     setParameterId(0,pid);
 
-    Vector3 meas;
+    Eigen::Vector3d meas;
     for (int i=0; i<3; i++) is >> meas[i];
     setMeasurement(meas);
     if (is.bad())
@@ -96,8 +96,8 @@ namespace deprecated {
   void EdgeSE3PointXYZDisparity::computeError() {
     //VertexSE3 *cam = static_cast<VertexSE3*>(_vertices[0]);
     VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
-    const Vector3& pt = point->estimate();
-    //Vector4 ppt(pt(0),pt(1),pt(2),1.0);
+    const Eigen::Vector3d& pt = point->estimate();
+    //Eigen::Vector4d ppt(pt(0),pt(1),pt(2),1.0);
     
     // VertexCameraCache* vcache = (VertexCameraCache*)cam->getCache(_cacheIds[0]);
     // if (! vcache){
@@ -109,9 +109,9 @@ namespace deprecated {
     //   cerr << "fatal error in retrieving cache" << endl;
     // }
     
-    Vector3 p = cache->w2i() * pt;
+    Eigen::Vector3d p = cache->w2i() * pt;
 
-    Vector3 perr;
+    Eigen::Vector3d perr;
     perr.head<2>() = p.head<2>()/p(2);
     perr(2) = 1/p(2);
     
@@ -137,9 +137,9 @@ namespace deprecated {
     // }
 
 
-    const Vector3& pt = vp->estimate();
+    const Eigen::Vector3d& pt = vp->estimate();
 
-    Vector3 Zcam = cache->w2lMatrix() * vp->estimate();
+    Eigen::Vector3d Zcam = cache->w2lMatrix() * vp->estimate();
 
     //  J(0,3) = -0.0;
     J(0,4) = -2*Zcam(2);
@@ -155,10 +155,10 @@ namespace deprecated {
 
     J.block<3,3>(0,6) = cache->w2lMatrix().rotation();
 
-    //Eigen::Matrix<number_t,3,9> Jprime = vcache->params->Kcam_inverseOffsetR  * J;
-    Eigen::Matrix<number_t,3,9> Jprime = params->Kcam_inverseOffsetR()  * J;
-    Eigen::Matrix<number_t, 3, 9> Jhom;
-    Vector3 Zprime = cache->w2i() * pt;
+    //Eigen::Matrix<double,3,9> Jprime = vcache->params->Kcam_inverseOffsetR  * J;
+    Eigen::Matrix<double,3,9> Jprime = params->Kcam_inverseOffsetR()  * J;
+    Eigen::Matrix<double, 3, 9> Jhom;
+    Eigen::Vector3d Zprime = cache->w2i() * pt;
 
     Jhom.block<2,9>(0,0) = 1/(Zprime(2)*Zprime(2)) * (Jprime.block<2,9>(0,0)*Zprime(2) - Zprime.head<2>() * Jprime.block<1,9>(2,0));
     Jhom.block<1,9>(2,0) = - 1/(Zprime(2)*Zprime(2)) * Jprime.block<1,9>(2,0);
@@ -172,16 +172,16 @@ namespace deprecated {
   bool EdgeSE3PointXYZDisparity::setMeasurementFromState(){
     //VertexSE3 *cam = static_cast< VertexSE3*>(_vertices[0]);
     VertexPointXYZ *point = static_cast<VertexPointXYZ*>(_vertices[1]);
-    const Vector3 &pt = point->estimate();
+    const Eigen::Vector3d &pt = point->estimate();
 
     // VertexCameraCache* vcache = (VertexCameraCache*) cam->getCache(_cacheIds[0]);
     // if (! vcache){
     //   cerr << "fatal error in retrieving cache" << endl;
     // }
 
-    Vector3 p = cache->w2i() * pt;
+    Eigen::Vector3d p = cache->w2i() * pt;
 
-    Vector3 perr;
+    Eigen::Vector3d perr;
     perr.head<2>() = p.head<2>()/p(2);
     perr(2) = 1/p(2);
 
@@ -203,9 +203,9 @@ namespace deprecated {
     //   cerr << "fatal error in retrieving cache" << endl;
     // }
     //ParameterCamera* params=vcache->params;
-    const Eigen::Matrix<number_t, 3, 3>& invKcam = params->invKcam();
-    Vector3 p;
-    number_t w=1/_measurement(2);
+    const Eigen::Matrix<double, 3, 3>& invKcam = params->invKcam();
+    Eigen::Vector3d p;
+    double w=1./_measurement(2);
     p.head<2>() = _measurement.head<2>()*w;
     p(2) = w;
     p = invKcam * p;
@@ -219,9 +219,9 @@ namespace deprecated {
 
   HyperGraphElementAction* EdgeProjectDisparityDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                 HyperGraphElementAction::Parameters* /* params_ */){
-    return nullptr;
+    return 0;
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     EdgeSE3PointXYZDisparity* e =  static_cast<EdgeSE3PointXYZDisparity*>(element);
     VertexSE3* fromEdge = static_cast<VertexSE3*>(e->vertex(0));
     VertexPointXYZ* toEdge   = static_cast<VertexPointXYZ*>(e->vertex(1));

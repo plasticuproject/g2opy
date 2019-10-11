@@ -26,28 +26,12 @@
 
 #ifndef G2O_SEVEN_DOF_EXPMAP_TYPES
 #define G2O_SEVEN_DOF_EXPMAP_TYPES
-#include "g2o/config.h"
+
 #include "g2o/core/base_vertex.h"
 #include "g2o/core/base_binary_edge.h"
 #include "g2o/types/sba/types_six_dof_expmap.h"
 #include "sim3.h"
 
-#ifdef _MSC_VER
-// We are using a Microsoft compiler:
-#ifdef G2O_SHARED_LIBS
-#ifdef types_sim3_EXPORTS
-#define G2O_TYPES_SIM3_API __declspec(dllexport)
-#else
-#define G2O_TYPES_SIM3_API __declspec(dllimport)
-#endif
-#else
-#define G2O_TYPES_SIM3_API
-#endif
-
-#else
-// Not Microsoft compiler so set empty definition:
-#define G2O_TYPES_SIM3_API
-#endif
 namespace g2o {
 
 
@@ -58,7 +42,7 @@ namespace g2o {
  *
  * Will represent relative transformation between two cameras
 */
-class G2O_TYPES_SIM3_API VertexSim3Expmap : public BaseVertex<7, Sim3>
+class VertexSim3Expmap : public BaseVertex<7, Sim3> 
 {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
@@ -70,9 +54,9 @@ class G2O_TYPES_SIM3_API VertexSim3Expmap : public BaseVertex<7, Sim3>
     _estimate = Sim3();
   }
 
-  virtual void oplusImpl(const number_t* update_)
+  virtual void oplusImpl(const double* update_) 
   {
-    Eigen::Map<Vector7> update(const_cast<number_t*>(update_));
+    Eigen::Map<Vector7d> update(const_cast<double*>(update_));
 
     if (_fix_scale)
       update[6] = 0;
@@ -81,18 +65,18 @@ class G2O_TYPES_SIM3_API VertexSim3Expmap : public BaseVertex<7, Sim3>
     setEstimate(s*estimate());
   }
 
-  Vector2 _principle_point1, _principle_point2;
-  Vector2 _focal_length1, _focal_length2;
+  Vector2D _principle_point1, _principle_point2;
+  Vector2D _focal_length1, _focal_length2;
 
-  Vector2 cam_map1(const Vector2 &v) const {
-    Vector2 res;
+  Vector2D cam_map1(const Vector2D &v) const {
+    Vector2D res;
     res[0] = v[0] * _focal_length1[0] + _principle_point1[0];
     res[1] = v[1] * _focal_length1[1] + _principle_point1[1];
     return res;
   }
 
-  Vector2 cam_map2(const Vector2 &v) const {
-    Vector2 res;
+  Vector2D cam_map2(const Vector2D &v) const {
+    Vector2D res;
     res[0] = v[0] * _focal_length2[0] + _principle_point2[0];
     res[1] = v[1] * _focal_length2[1] + _principle_point2[1];
     return res;
@@ -107,7 +91,7 @@ class G2O_TYPES_SIM3_API VertexSim3Expmap : public BaseVertex<7, Sim3>
   /**
  * \brief 7D edge between two Vertex7
  */
-  class G2O_TYPES_SIM3_API EdgeSim3 : public BaseBinaryEdge<7, Sim3, VertexSim3Expmap, VertexSim3Expmap>
+  class EdgeSim3 : public BaseBinaryEdge<7, Sim3, VertexSim3Expmap, VertexSim3Expmap>
   {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -124,7 +108,7 @@ class G2O_TYPES_SIM3_API VertexSim3Expmap : public BaseVertex<7, Sim3>
       _error = error_.log();
     }
 
-    virtual number_t initialEstimatePossible(const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) { return 1.;}
+    virtual double initialEstimatePossible(const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) { return 1.;}
     virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* /*to*/)
     {
       VertexSim3Expmap* v1 = static_cast<VertexSim3Expmap*>(_vertices[0]);
@@ -138,7 +122,7 @@ class G2O_TYPES_SIM3_API VertexSim3Expmap : public BaseVertex<7, Sim3>
 
 
 /**/
-class G2O_TYPES_SIM3_API EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2,  VertexSBAPointXYZ, VertexSim3Expmap>
+class EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2D,  VertexSBAPointXYZ, VertexSim3Expmap>
 {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -151,7 +135,7 @@ class G2O_TYPES_SIM3_API EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2,
       const VertexSim3Expmap* v1 = static_cast<const VertexSim3Expmap*>(_vertices[1]);
       const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
 
-      Vector2 obs(_measurement);
+      Vector2D obs(_measurement);
       _error = obs-v1->cam_map1(project(v1->estimate().map(v2->estimate())));
     }
 
@@ -160,7 +144,7 @@ class G2O_TYPES_SIM3_API EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2,
 };
 
 /**/
-class G2O_TYPES_SIM3_API EdgeInverseSim3ProjectXYZ : public BaseBinaryEdge<2, Vector2, VertexSBAPointXYZ, VertexSim3Expmap> {
+class EdgeInverseSim3ProjectXYZ : public BaseBinaryEdge<2, Vector2D, VertexSBAPointXYZ, VertexSim3Expmap> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   EdgeInverseSim3ProjectXYZ();
@@ -171,7 +155,7 @@ class G2O_TYPES_SIM3_API EdgeInverseSim3ProjectXYZ : public BaseBinaryEdge<2, Ve
     const VertexSim3Expmap *v1 = static_cast<const VertexSim3Expmap *>(_vertices[1]);
     const VertexSBAPointXYZ *v2 = static_cast<const VertexSBAPointXYZ *>(_vertices[0]);
 
-    Vector2 obs(_measurement);
+    Vector2D obs(_measurement);
     _error = obs - v1->cam_map2(project(v1->estimate().inverse().map(v2->estimate())));
   }
 

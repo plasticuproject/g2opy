@@ -64,8 +64,6 @@ namespace g2o {
       int batchSolveEachN() const { return _batchEveryN;}
       void setBatchSolveEachN(int n);
 
-      SparseOptimizerOnline* optimizer() { return _optimizer;}
-
     protected:
       SparseOptimizerOnline* _optimizer;
       bool _firstOptimization;

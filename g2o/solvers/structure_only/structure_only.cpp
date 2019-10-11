@@ -46,7 +46,7 @@ namespace g2o {
       return optimizationAlgo;
     }
     else
-      return nullptr;
+      return 0;
   }
 
   class StructureOnlyCreator : public AbstractOptimizationAlgorithmCreator

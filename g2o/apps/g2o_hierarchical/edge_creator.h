@@ -27,9 +27,10 @@
 #ifndef G2O_EDGE_CREATOR_
 #define G2O_EDGE_CREATOR_
 
+#include "g2o/core/sparse_optimizer.h"
+#include <Eigen/Core>
 #include <vector>
 
-#include "g2o/core/sparse_optimizer.h"
 #include "g2o_hierarchical_api.h"
 
 namespace g2o {

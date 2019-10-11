@@ -32,11 +32,11 @@ namespace g2o
 {
 
   VertexPlane::VertexPlane(){
-    color << cst(.2), cst(.2), cst(.2);
+    color << .2, .2, .2;
   }
   
   bool VertexPlane::read(std::istream& is) {
-    Vector4 lv;
+    Vector4D lv;
     for (int i=0; i<4; i++)
       is >> lv[i];
     setEstimate(Plane3D(lv));
@@ -45,7 +45,7 @@ namespace g2o
   }
 
   bool VertexPlane::write(std::ostream& os) const {
-    Vector4 lv=_estimate.toVector();
+    Vector4D lv=_estimate.toVector();
     for (int i=0; i<4; i++){
       os << lv[i] << " ";
     }
@@ -77,7 +77,7 @@ namespace g2o
                  HyperGraphElementAction::Parameters* params_)
   {
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams)
@@ -87,9 +87,9 @@ namespace g2o
       return this;
 
     VertexPlane* that = static_cast<VertexPlane*>(element);
-    number_t d = that->estimate().distance();
-    number_t azimuth = Plane3D::azimuth(that->estimate().normal());
-    number_t elevation = Plane3D::elevation(that->estimate().normal());
+    double d = that->estimate().distance();
+    double azimuth = Plane3D::azimuth(that->estimate().normal());
+    double elevation = Plane3D::elevation(that->estimate().normal());
     glColor3f(float(that->color(0)), float(that->color(1)), float(that->color(2)));
     glPushMatrix();
     glRotatef(float(RAD2DEG(azimuth)), 0.f, 0.f, 1.f);

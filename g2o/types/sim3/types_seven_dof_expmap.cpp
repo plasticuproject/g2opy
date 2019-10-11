@@ -38,7 +38,6 @@ namespace g2o {
   G2O_REGISTER_TYPE(VERTEX_SIM3:EXPMAP, VertexSim3Expmap);
   G2O_REGISTER_TYPE(EDGE_SIM3:EXPMAP, EdgeSim3);
   G2O_REGISTER_TYPE(EDGE_PROJECT_SIM3_XYZ:EXPMAP, EdgeSim3ProjectXYZ);
-  G2O_REGISTER_TYPE(EDGE_PROJECT_INVERSE_SIM3_XYZ:EXPMAP, EdgeInverseSim3ProjectXYZ);
   
     VertexSim3Expmap::VertexSim3Expmap() : BaseVertex<7, Sim3>()
     {
@@ -64,7 +63,7 @@ namespace g2o {
     
     
     bool VertexSim3Expmap::read(std::istream &is) {
-        Vector7 cam2world;
+        Vector7d cam2world;
         for (int i = 0; i < 6; i++) {
             is >> cam2world[i];
         }
@@ -88,7 +87,7 @@ namespace g2o {
     
     bool VertexSim3Expmap::write(std::ostream &os) const {
         Sim3 cam2world(estimate().inverse());
-        Vector7 lv = cam2world.log();
+        Vector7d lv = cam2world.log();
         for (int i = 0; i < 7; i++) {
             os << lv[i] << " ";
         }
@@ -103,7 +102,7 @@ namespace g2o {
     
 bool EdgeSim3::read(std::istream& is)
   {
-    Vector7 v7;
+    Vector7d v7;
     for (int i=0; i<7; i++){
       is >> v7[i];
     }
@@ -124,7 +123,7 @@ bool EdgeSim3::read(std::istream& is)
   bool EdgeSim3::write(std::ostream& os) const
   {
     Sim3 cam2world(measurement().inverse());
-    Vector7 v7 = cam2world.log();
+    Vector7d v7 = cam2world.log();
     for (int i=0; i<7; i++)
     {
       os  << v7[i] << " ";
@@ -139,7 +138,7 @@ bool EdgeSim3::read(std::istream& is)
   /**Sim3ProjectXYZ*/
 
   EdgeSim3ProjectXYZ::EdgeSim3ProjectXYZ() :
-  BaseBinaryEdge<2, Vector2, VertexSBAPointXYZ, VertexSim3Expmap>()
+  BaseBinaryEdge<2, Vector2D, VertexSBAPointXYZ, VertexSim3Expmap>()
   {
   }
 
@@ -173,7 +172,7 @@ bool EdgeSim3::read(std::istream& is)
   }
 
 EdgeInverseSim3ProjectXYZ::EdgeInverseSim3ProjectXYZ() :
-    BaseBinaryEdge<2, Vector2, VertexSBAPointXYZ, VertexSim3Expmap>() {
+    BaseBinaryEdge<2, Vector2D, VertexSBAPointXYZ, VertexSim3Expmap>() {
 }
 
 bool EdgeInverseSim3ProjectXYZ::read(std::istream &is) {
@@ -208,15 +207,15 @@ bool EdgeInverseSim3ProjectXYZ::write(std::ostream &os) const {
 //    Sim3 T = vj->estimate();
 
 //    VertexPointXYZ* vi = static_cast<VertexPointXYZ*>(_vertices[0]);
-//    Vector3 xyz = vi->estimate();
-//    Vector3 xyz_trans = T.map(xyz);
+//    Vector3D xyz = vi->estimate();
+//    Vector3D xyz_trans = T.map(xyz);
 
-//    number_t x = xyz_trans[0];
-//    number_t y = xyz_trans[1];
-//    number_t z = xyz_trans[2];
-//    number_t z_2 = z*z;
+//    double x = xyz_trans[0];
+//    double y = xyz_trans[1];
+//    double z = xyz_trans[2];
+//    double z_2 = z*z;
 
-//    Matrix<number_t,2,3,Eigen::ColMajor> tmp;
+//    Matrix<double,2,3,Eigen::ColMajor> tmp;
 //    tmp(0,0) = _focal_length(0);
 //    tmp(0,1) = 0;
 //    tmp(0,2) = -x/z*_focal_length(0);

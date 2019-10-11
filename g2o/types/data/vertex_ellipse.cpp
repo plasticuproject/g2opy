@@ -27,7 +27,6 @@
 #include "vertex_ellipse.h"
 
 #include "g2o/stuff/macros.h"
-#include "g2o/stuff/misc.h"
 
 #ifdef G2O_HAVE_OPENGL
 #include "g2o/stuff/opengl_wrapper.h"
@@ -122,7 +121,7 @@ namespace g2o {
   HyperGraphElementAction* VertexEllipseDrawAction::operator()(HyperGraph::HyperGraphElement* element,
 							       HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams){
@@ -155,17 +154,17 @@ namespace g2o {
     }
 
     Matrix2F rot = that->U();
-    float angle = std::atan2(rot(1,0), rot(0,0));
-    glRotatef(angle*180.0/const_pi(), 0., 0., 1.);
+    float angle = atan2(rot(1,0), rot(0,0));
+    glRotatef(angle*180.0/M_PI, 0., 0., 1.);
     Vector2F sv = that->singularValues();
     glScalef(sqrt(sv(0)), sqrt(sv(1)), 1);
 
     glColor3f(1.f,0.7f,1.f);
     glBegin(GL_LINE_LOOP);
     for(int i=0; i<36; i++){
-      float rad = i*const_pi() /18.0;
-      glVertex2f(std::cos(rad),
-		 std::sin(rad));
+      float rad = i*M_PI/18.0;
+      glVertex2f(cos(rad),
+		 sin(rad));
     }
     glEnd();
 

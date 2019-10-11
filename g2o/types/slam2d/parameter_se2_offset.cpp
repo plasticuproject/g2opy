@@ -45,7 +45,7 @@ namespace g2o {
   }
 
   bool ParameterSE2Offset::read(std::istream& is) {
-    Vector3 off;
+    Vector3D off;
     for (int i=0; i<3; i++) {
       is >> off[i];
       std::cerr << off[i] << " " ;
@@ -56,7 +56,7 @@ namespace g2o {
   }
   
   bool ParameterSE2Offset::write(std::ostream& os) const {
-    Vector3 off = _offset.toVector();
+    Vector3D off = _offset.toVector();
     for (int i=0; i<3; i++)
       os << off[i] << " ";
     return os.good();
@@ -88,9 +88,9 @@ namespace g2o {
     _w2l = w2l.rotation().toRotationMatrix();
     _w2l.translation() = w2l.translation();
 
-    number_t alpha=v->estimate().rotation().angle();
-    number_t c=std::cos(alpha), s=std::sin(alpha);
-    Matrix2 RInversePrime;
+    double alpha=v->estimate().rotation().angle();
+    double c=cos(alpha), s=sin(alpha);
+    Matrix2D RInversePrime;
     RInversePrime << -s, c, -c, -s;
     _RpInverse_RInversePrime = _offsetParam->offset().rotation().toRotationMatrix().transpose()*RInversePrime;
     _RpInverse_RInverse=w2l.rotation();

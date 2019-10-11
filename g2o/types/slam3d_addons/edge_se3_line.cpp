@@ -106,7 +106,7 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE3Line3DDrawAction::operator()(HyperGraph::HyperGraphElement* element,
 							       HyperGraphElementAction::Parameters* params_) {
     if(typeid(*element).name() != _typeName) {
-      return nullptr;
+      return 0;
     }
 
     refreshPropertyPtrs(params_);
@@ -128,16 +128,16 @@ namespace g2o {
     const VertexLine3D* landmark = dynamic_cast<const VertexLine3D*>(that->vertex(1));
 
     if(!robot || !landmark) {
-      return nullptr;
+      return 0;
     }
 
     Line3D line = that->measurement();
     line.normalize();
-    Vector3 direction = line.d();
-    Vector3 npoint = line.d().cross(line.w());
+    Eigen::Vector3d direction = line.d();
+    Eigen::Vector3d npoint = line.d().cross(line.w());
     
     glPushMatrix();
-    glMultMatrixd(robot->estimate().matrix().cast<double>().eval().data());
+    glMultMatrixd(robot->estimate().matrix().data());
     glColor3f(float(that->color(0)), float(that->color(1)), float(that->color(2)));
     if(_lineLength && _lineWidth) {
       glLineWidth(float(_lineWidth->value())); 

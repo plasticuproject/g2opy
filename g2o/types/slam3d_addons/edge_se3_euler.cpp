@@ -34,21 +34,21 @@ namespace g2o
 {
 
   /** conversion code from Euler angles */
-static void jac_quat3_euler3(Eigen::Matrix<number_t, 6, 6, Eigen::ColMajor>& J, const Isometry3& t)
+static void jac_quat3_euler3(Eigen::Matrix<double, 6, 6, Eigen::ColMajor>& J, const Isometry3D& t)
 {
-  Vector7 t0 = g2o::internal::toVectorQT(t);
+  Vector7d t0 = g2o::internal::toVectorQT(t);
 
-  number_t delta= cst(1e-6);
-  number_t idelta= 1 / (2 * delta);
+  double delta=1e-6;
+  double idelta= 1. / (2. * delta);
 
-  Vector7 ta = t0;
-  Vector7 tb = t0;
+  Vector7d ta = t0;
+  Vector7d tb = t0;
   for (int i=0; i<6; i++){
     ta=tb=t0;
     ta[i]-=delta;
     tb[i]+=delta;
-    Vector6 ea = g2o::internal::toVectorET(g2o::internal::fromVectorQT(ta));
-    Vector6 eb = g2o::internal::toVectorET(g2o::internal::fromVectorQT(tb));
+    Vector6d ea = g2o::internal::toVectorET(g2o::internal::fromVectorQT(ta));
+    Vector6d eb = g2o::internal::toVectorET(g2o::internal::fromVectorQT(tb));
     J.col(3)=(eb-ea)*idelta;
   }
 }
@@ -56,20 +56,20 @@ static void jac_quat3_euler3(Eigen::Matrix<number_t, 6, 6, Eigen::ColMajor>& J, 
 
   bool EdgeSE3Euler::read(std::istream& is)
   {
-    Vector6 meas;
+    Vector6d meas;
     for (int i=0; i<6; i++)
       is  >> meas[i];
-    Isometry3 transf= g2o::internal::fromVectorET(meas);
-    Matrix<number_t, 6, 6, Eigen::ColMajor> infMatEuler;
+    Isometry3D transf= g2o::internal::fromVectorET(meas);
+    Matrix<double, 6, 6, Eigen::ColMajor> infMatEuler;
     for (int i=0; i<6; i++)
       for (int j=i; j<6; j++) {
         is >> infMatEuler(i,j);
         if (i!=j)
           infMatEuler(j,i) = infMatEuler(i,j);
       }
-    Matrix<number_t, 6, 6, Eigen::ColMajor> J;
+    Matrix<double, 6, 6, Eigen::ColMajor> J;
     jac_quat3_euler3(J, transf);
-    Matrix<number_t, 6, 6, Eigen::ColMajor> infMat = J.transpose() * infMatEuler * J;
+    Matrix<double, 6, 6, Eigen::ColMajor> infMat = J.transpose() * infMatEuler * J;
     setMeasurement(transf);
     setInformation(infMat);
     return true;
@@ -77,15 +77,15 @@ static void jac_quat3_euler3(Eigen::Matrix<number_t, 6, 6, Eigen::ColMajor>& J, 
 
   bool EdgeSE3Euler::write(std::ostream& os) const
   {
-    Vector6 meas = g2o::internal::toVectorET(_measurement);
+    Vector6d meas = g2o::internal::toVectorET(_measurement);
     for (int i=0; i<6; i++)
       os << meas[i] << " ";
 
-    Matrix<number_t, 6, 6, Eigen::ColMajor> J;
+    Matrix<double, 6, 6, Eigen::ColMajor> J;
     jac_quat3_euler3(J, measurement());
     //HACK: invert the jacobian to simulate the inverse derivative
     J=J.inverse();
-    Matrix<number_t, 6, 6, Eigen::ColMajor> infMatEuler = J.transpose()*information()*J;
+    Matrix<double, 6, 6, Eigen::ColMajor> infMatEuler = J.transpose()*information()*J;
     for (int i=0; i<6; i++)
       for (int j=i; j<6; j++){
         os << " " <<  infMatEuler(i,j);

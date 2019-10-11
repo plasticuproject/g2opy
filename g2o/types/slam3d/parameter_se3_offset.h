@@ -27,14 +27,17 @@
 #ifndef G2O_VERTEX_SE3_OFFSET_PARAMETERS_H_
 #define G2O_VERTEX_SE3_OFFSET_PARAMETERS_H_
 
+#include "g2o/core/optimizable_graph.h"
 
 #include "g2o/core/hyper_graph_action.h"
 #include "g2o/core/cache.h"
 #include "g2o_types_slam3d_api.h"
 
+#include <Eigen/Geometry>
 
 namespace g2o {
 
+  class VertexSE3;
 
   /**
    * \brief offset for an SE3
@@ -52,17 +55,17 @@ namespace g2o {
        * update the offset to a new value.
        * re-calculates the different representations, e.g., the rotation matrix
        */
-      void setOffset(const Isometry3& offset_=Isometry3::Identity());
+      void setOffset(const Isometry3D& offset_=Isometry3D::Identity());
 
       //! rotation of the offset as 3x3 rotation matrix
-      const Isometry3& offset() const { return _offset;}
+      const Isometry3D& offset() const { return _offset;}
 
       //! rotation of the inverse offset as 3x3 rotation matrix
-      const Isometry3& inverseOffset() const { return _inverseOffset;}
+      const Isometry3D& inverseOffset() const { return _inverseOffset;}
 
     protected:
-      Isometry3 _offset;
-      Isometry3 _inverseOffset;
+      Isometry3D _offset;
+      Isometry3D _inverseOffset;
   };
 
   /**
@@ -77,15 +80,15 @@ namespace g2o {
       const ParameterSE3Offset* offsetParam() const { return _offsetParam;}
       void setOffsetParam(ParameterSE3Offset* offsetParam);
 
-      const Isometry3& w2n() const { return _w2n;}
-      const Isometry3& n2w() const { return _n2w;}
-      const Isometry3& w2l() const { return _w2l;}
+      const Isometry3D& w2n() const { return _w2n;}
+      const Isometry3D& n2w() const { return _n2w;}
+      const Isometry3D& w2l() const { return _w2l;}
 
     protected:
       ParameterSE3Offset* _offsetParam; ///< the parameter connected to the cache
-      Isometry3 _w2n;
-      Isometry3 _n2w;
-      Isometry3 _w2l;
+      Isometry3D _w2n;
+      Isometry3D _n2w;
+      Isometry3D _w2l;
 
     protected:
       virtual bool resolveDependancies();

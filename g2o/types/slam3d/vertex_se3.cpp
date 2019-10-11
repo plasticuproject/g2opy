@@ -39,7 +39,7 @@ using namespace Eigen;
 namespace g2o {
 
   VertexSE3::VertexSE3() :
-    BaseVertex<6, Isometry3>(),
+    BaseVertex<6, Isometry3D>(),
     _numOplusCalls(0)
   {
     setToOriginImpl();
@@ -48,7 +48,7 @@ namespace g2o {
 
   bool VertexSE3::read(std::istream& is)
   {
-    Vector7 est;
+    Vector7d est;
     for (int i=0; i<7; i++)
       is  >> est[i];
     setEstimate(internal::fromVectorQT(est));
@@ -57,7 +57,7 @@ namespace g2o {
 
   bool VertexSE3::write(std::ostream& os) const
   {
-    Vector7 est=internal::toVectorQT(_estimate);
+    Vector7d est=internal::toVectorQT(_estimate);
     for (int i=0; i<7; i++)
       os << est[i] << " ";
     return os.good();
@@ -67,15 +67,15 @@ namespace g2o {
 
   HyperGraphElementAction* VertexSE3WriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
     if (!params->os){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified" << std::endl;
-      return nullptr;
+      return 0;
     }
     
     VertexSE3* v =  static_cast<VertexSE3*>(element);
-    Vector6 est=internal::toVectorMQT(v->estimate());
+    Vector6d est=internal::toVectorMQT(v->estimate());
     for (int i=0; i<6; i++)
       *(params->os) << est[i] << " ";
     *(params->os) << std::endl;
@@ -119,7 +119,7 @@ namespace g2o {
   HyperGraphElementAction* VertexSE3DrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                  HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     initializeDrawActionsCache();
     refreshPropertyPtrs(params_);
 
@@ -133,7 +133,7 @@ namespace g2o {
 
     glColor3f(POSE_VERTEX_COLOR);
     glPushMatrix();
-    glMultMatrixd(that->estimate().matrix().cast<double>().eval().data());
+    glMultMatrixd(that->estimate().matrix().data());
     opengl::drawArrow2D(_triangleX->value(), _triangleY->value(), _triangleX->value()*.3f);
     drawCache(that->cacheContainer(), params_);
     drawUserData(that->userData(), params_);

@@ -27,11 +27,14 @@
 #ifndef G2O_VERTEX_SE2_OFFSET_PARAMETERS_H_
 #define G2O_VERTEX_SE2_OFFSET_PARAMETERS_H_
 
+#include "g2o/core/optimizable_graph.h"
 
 #include "se2.h"
 #include "g2o_types_slam2d_api.h"
+#include "g2o/core/hyper_graph_action.h"
 #include "g2o/core/cache.h"
 
+#include <Eigen/Geometry>
 
 namespace g2o {
 
@@ -58,15 +61,15 @@ namespace g2o {
       const SE2& offset() const { return _offset;}
 
       //! rotation of the offset as 2x2 rotation matrix
-      const Isometry2& offsetMatrix() const { return _offsetMatrix;}
+      const Isometry2D& offsetMatrix() const { return _offsetMatrix;}
 
       //! rotation of the inverse offset as 2x2 rotation matrix
-      const Isometry2& inverseOffsetMatrix() const { return _inverseOffsetMatrix;}
+      const Isometry2D& inverseOffsetMatrix() const { return _inverseOffsetMatrix;}
 
     protected:
       SE2 _offset;
-      Isometry2 _offsetMatrix;
-      Isometry2 _inverseOffsetMatrix;
+      Isometry2D _offsetMatrix;
+      Isometry2D _inverseOffsetMatrix;
   };
 
   /**
@@ -84,23 +87,23 @@ namespace g2o {
       const SE2& w2n() const {return _se2_w2n;}
       const SE2& n2w() const {return _se2_n2w;}
 
-      const Isometry2& w2nMatrix() const { return _w2n;}
-      const Isometry2& n2wMatrix() const { return _n2w;}
-      const Isometry2& w2lMatrix() const { return _w2l;}
+      const Isometry2D& w2nMatrix() const { return _w2n;}
+      const Isometry2D& n2wMatrix() const { return _n2w;}
+      const Isometry2D& w2lMatrix() const { return _w2l;}
 
-      const Matrix2 RpInverseRInverseMatrix() const { return _RpInverse_RInverse; }
-      const Matrix2 RpInverseRInversePrimeMatrix() const { return _RpInverse_RInversePrime; }
+      const Matrix2D RpInverseRInverseMatrix() const { return _RpInverse_RInverse; }
+      const Matrix2D RpInverseRInversePrimeMatrix() const { return _RpInverse_RInversePrime; }
 
     protected:
       ParameterSE2Offset* _offsetParam; ///< the parameter connected to the cache
       SE2 _se2_w2n;
       SE2 _se2_n2w;
 
-      Isometry2 _w2n; ///< world to sensor transform
-      Isometry2 _w2l; ///< world to local
-      Isometry2 _n2w; ///< sensor to world
-      Matrix2 _RpInverse_RInverse;
-      Matrix2 _RpInverse_RInversePrime;
+      Isometry2D _w2n; ///< world to sensor transform
+      Isometry2D _w2l; ///< world to local
+      Isometry2D _n2w; ///< sensor to world
+      Matrix2D _RpInverse_RInverse;
+      Matrix2D _RpInverse_RInversePrime;
       
     protected:
       virtual bool resolveDependancies();

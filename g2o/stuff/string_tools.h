@@ -98,7 +98,7 @@ OutputIterator readFloats(const char* str, OutputIterator out)
   char* cl  = (char*)str;
   char* cle = cl;
   while (1) {
-    number_t val = strtod(cl, &cle);
+    double val = strtod(cl, &cle);
     if (cl == cle)
       break;
     *out++ = val;

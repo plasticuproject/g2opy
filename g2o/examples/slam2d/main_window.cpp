@@ -48,7 +48,7 @@ void MainWindow::on_actionLoad_triggered(bool)
     cerr << "Graph loaded with " << viewer->graph->vertices().size() << " vertices and "
       << viewer->graph->edges().size() << " measurments" << endl;
   }
-  viewer->update();
+  viewer->updateGL();
   fixGraph();
 }
 
@@ -98,14 +98,14 @@ void MainWindow::on_btnOptimize_clicked()
   }
   viewer->drawCovariance = cbCovariances->isChecked();
 
-  viewer->update();
+  viewer->updateGL();
 }
 
 void MainWindow::on_btnInitialGuess_clicked()
 {
   viewer->graph->computeInitialGuess();
   viewer->drawCovariance = false;
-  viewer->update();
+  viewer->updateGL();
 }
 
 void MainWindow::fixGraph()

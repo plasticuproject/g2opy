@@ -80,17 +80,17 @@ namespace g2o {
 
   OptimizableGraph::Vertex* OptimizableGraph::Vertex::clone() const
   {
-    return nullptr;
+    return 0;
   }
 
-  bool OptimizableGraph::Vertex::setEstimateData(const number_t* v)
+  bool OptimizableGraph::Vertex::setEstimateData(const double* v)
   {
     bool ret = setEstimateDataImpl(v);
     updateCache();
     return ret;
   }
 
-  bool OptimizableGraph::Vertex::getEstimateData(number_t *) const
+  bool OptimizableGraph::Vertex::getEstimateData(double *) const
   {
     return false;
   }
@@ -100,14 +100,14 @@ namespace g2o {
     return -1;
   }
 
-  bool OptimizableGraph::Vertex::setMinimalEstimateData(const number_t* v)
+  bool OptimizableGraph::Vertex::setMinimalEstimateData(const double* v)
   {
     bool ret = setMinimalEstimateDataImpl(v);
     updateCache();
     return ret;
   }
 
-  bool OptimizableGraph::Vertex::getMinimalEstimateData(number_t *) const
+  bool OptimizableGraph::Vertex::getMinimalEstimateData(double *) const
   {
     return false;
   }
@@ -131,19 +131,19 @@ namespace g2o {
 
   OptimizableGraph* OptimizableGraph::Edge::graph(){
     if (! _vertices.size())
-      return nullptr;
+      return 0;
     OptimizableGraph::Vertex* v=(OptimizableGraph::Vertex*)_vertices[0];
     if (!v)
-      return nullptr;
+      return 0;
     return v->graph();
   }
 
   const OptimizableGraph* OptimizableGraph::Edge::graph() const{
     if (! _vertices.size())
-      return nullptr;
+      return 0;
     const OptimizableGraph::Vertex* v=(const OptimizableGraph::Vertex*) _vertices[0];
     if (!v)
-      return nullptr;
+      return 0;
     return v->graph();
   }
 
@@ -191,12 +191,12 @@ namespace g2o {
     return true;
   }
 
-  bool OptimizableGraph::Edge::setMeasurementData(const number_t *)
+  bool OptimizableGraph::Edge::setMeasurementData(const double *)
   {
     return false;
   }
 
-  bool OptimizableGraph::Edge::getMeasurementData(number_t *) const
+  bool OptimizableGraph::Edge::getMeasurementData(double *) const
   {
     return false;
   }
@@ -214,7 +214,7 @@ namespace g2o {
   OptimizableGraph::Edge* OptimizableGraph::Edge::clone() const
   {
     // TODO
-    return nullptr;
+    return 0;
   }
 
 
@@ -328,9 +328,9 @@ namespace g2o {
 
   int OptimizableGraph::optimize(int /*iterations*/, bool /*online*/) {return 0;}
 
-number_t OptimizableGraph::chi2() const
+double OptimizableGraph::chi2() const
 {
-  number_t chi = 0.0;
+  double chi = 0.0;
   for (OptimizableGraph::EdgeSet::const_iterator it = this->edges().begin(); it != this->edges().end(); ++it) {
     const OptimizableGraph::Edge* e = static_cast<const OptimizableGraph::Edge*>(*it);
     chi += e->chi2();
@@ -981,10 +981,10 @@ void OptimizableGraph::clearParameters()
 bool OptimizableGraph::verifyInformationMatrices(bool verbose) const
 {
   bool allEdgeOk = true;
-  Eigen::SelfAdjointEigenSolver<MatrixX> eigenSolver;
+  Eigen::SelfAdjointEigenSolver<MatrixXD> eigenSolver;
   for (OptimizableGraph::EdgeSet::const_iterator it = edges().begin(); it != edges().end(); ++it) {
     OptimizableGraph::Edge* e = static_cast<OptimizableGraph::Edge*>(*it);
-    MatrixX::MapType information(e->informationData(), e->dimension(), e->dimension());
+    MatrixXD::MapType information(e->informationData(), e->dimension(), e->dimension());
     // test on symmetry
     bool isSymmetric = information.transpose() == information;
     bool okay = isSymmetric;

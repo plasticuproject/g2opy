@@ -1,5 +1,5 @@
-add_executable(convert_sba_slam3d
+ADD_EXECUTABLE(convert_sba_slam3d
   convert_sba_slam3d.cpp
 )
-set_target_properties(convert_sba_slam3d PROPERTIES OUTPUT_NAME convert_sba_slam3d${EXE_POSTFIX})
-target_link_libraries(convert_sba_slam3d core types_slam3d types_sba)
+SET_TARGET_PROPERTIES(convert_sba_slam3d PROPERTIES OUTPUT_NAME convert_sba_slam3d${EXE_POSTFIX})
+TARGET_LINK_LIBRARIES(convert_sba_slam3d core types_slam3d types_sba)

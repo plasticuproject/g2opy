@@ -59,7 +59,7 @@ namespace g2o {
  * block sizes than you have to use a dynamic-block matrix (default
  * template argument).  
  */
-template <class MatrixType = MatrixX >
+template <class MatrixType = MatrixXD >
 class SparseBlockMatrix {
 
   public:
@@ -145,19 +145,19 @@ class SparseBlockMatrix {
     bool multiply(SparseBlockMatrix<MatrixResultType> *& dest, const SparseBlockMatrix<MatrixFactorType>* M) const;
 
     //! dest = (*this) *  src
-    void multiply(number_t*& dest, const number_t* src) const;
+    void multiply(double*& dest, const double* src) const;
 
     /**
      * compute dest = (*this) *  src
      * However, assuming that this is a symmetric matrix where only the upper triangle is stored
      */
-    void multiplySymmetricUpperTriangle(number_t*& dest, const number_t* src) const;
+    void multiplySymmetricUpperTriangle(double*& dest, const double* src) const;
 
     //! dest = M * (*this)
-    void rightMultiply(number_t*& dest, const number_t* src) const;
+    void rightMultiply(double*& dest, const double* src) const;
 
     //! *this *= a
-    void scale( number_t a);
+    void scale( double a);
 
     /**
      * writes in dest a block permutaton specified by pinv.
@@ -168,13 +168,13 @@ class SparseBlockMatrix {
     /**
      * fill the CCS arrays of a matrix, arrays have to be allocated beforehand
      */
-    int fillCCS(int* Cp, int* Ci, number_t* Cx, bool upperTriangle = false) const;
+    int fillCCS(int* Cp, int* Ci, double* Cx, bool upperTriangle = false) const;
 
     /**
      * fill the CCS arrays of a matrix, arrays have to be allocated beforehand. This function only writes
      * the values and assumes that column and row structures have already been written.
      */
-    int fillCCS(number_t* Cx, bool upperTriangle = false) const;
+    int fillCCS(double* Cx, bool upperTriangle = false) const;
 
     //! exports the non zero blocks in the structure matrix ms
     void fillBlockStructure(MatrixStructure& ms) const;
@@ -233,7 +233,7 @@ class SparseBlockMatrix {
 template < class  MatrixType >
 std::ostream& operator << (std::ostream&, const SparseBlockMatrix<MatrixType>& m);
 
-  typedef SparseBlockMatrix<MatrixX> SparseBlockMatrixX;   
+  typedef SparseBlockMatrix<MatrixXD> SparseBlockMatrixXd;   
 
 } //end namespace
 

@@ -39,24 +39,24 @@ namespace g2o {
     setOffset();
   }
 
-  void ParameterSE3Offset::setOffset(const Isometry3& offset_){
+  void ParameterSE3Offset::setOffset(const Isometry3D& offset_){
     _offset = offset_;
     _inverseOffset = _offset.inverse();
   }
 
   bool ParameterSE3Offset::read(std::istream& is) {
-    Vector7 off;
+    Vector7d off;
     for (int i=0; i<7; i++) {
       is >> off[i];
     }
     // normalize the quaternion to recover numerical precision lost by storing as human readable text
-    Vector4::MapType(off.data()+3).normalize();
+    Vector4D::MapType(off.data()+3).normalize();
     setOffset(internal::fromVectorQT(off));
-    return !is.fail();
+    return is.good();
   }
   
   bool ParameterSE3Offset::write(std::ostream& os) const {
-    Vector7 off =internal::toVectorQT(_offset);
+    Vector7d off =internal::toVectorQT(_offset);
     for (int i=0; i<7; i++)
       os << off[i] << " ";
     return os.good();
@@ -106,7 +106,7 @@ namespace g2o {
   HyperGraphElementAction* CacheSE3OffsetDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                 HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     CacheSE3Offset* that = static_cast<CacheSE3Offset*>(element);
     refreshPropertyPtrs(params_);
     if (! _previousParams)
@@ -118,7 +118,7 @@ namespace g2o {
     glPushAttrib(GL_COLOR);
     glColor3f(POSE_PARAMETER_COLOR);
     glPushMatrix();
-    glMultMatrixd(that->offsetParam()->offset().cast<double>().data());
+    glMultMatrixd(that->offsetParam()->offset().data());
     opengl::drawBox(cs,cs,cs);
     glPopMatrix();
     glPopAttrib();

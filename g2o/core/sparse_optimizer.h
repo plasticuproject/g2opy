@@ -34,10 +34,12 @@
 #include "g2o_core_api.h"
 #include "batch_stats.h"
 
+#include <map>
 
 namespace g2o {
 
   // forward declaration
+  class ActivePathCostFunction;
   class OptimizationAlgorithm;
   class EstimatePropagatorCost;
 
@@ -126,7 +128,7 @@ namespace g2o {
      * @param spinv: the sparse block matrix with the result
      * @returns false if the operation is not supported by the solver
      */
-    bool computeMarginals(SparseBlockMatrix<MatrixX>& spinv, const std::vector<std::pair<int, int> >& blockIndices);
+    bool computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, const std::vector<std::pair<int, int> >& blockIndices);
 
     /**
      * computes the inverse of the specified vertex.
@@ -134,7 +136,7 @@ namespace g2o {
      * @param spinv: the sparse block matrix with the result
      * @returns false if the operation is not supported by the solver
      */
-    bool computeMarginals(SparseBlockMatrix<MatrixX>& spinv, const Vertex* vertex) {
+    bool computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, const Vertex* vertex) {
       if (vertex->hessianIndex() < 0) {
           return false;
       }
@@ -149,7 +151,7 @@ namespace g2o {
      * @param spinv: the sparse block matrix with the result
      * @returns false if the operation is not supported by the solver
      */
-    bool computeMarginals(SparseBlockMatrix<MatrixX>& spinv, const VertexContainer& vertices) {
+    bool computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, const VertexContainer& vertices) {
       std::vector<std::pair<int, int> > indices;
       for (VertexContainer::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
         indices.push_back(std::pair<int, int>((*it)->hessianIndex(),(*it)->hessianIndex()));
@@ -165,13 +167,13 @@ namespace g2o {
     bool gaugeFreedom();
 
     /**returns the cached chi2 of the active portion of the graph*/
-    number_t activeChi2() const;
+    double activeChi2() const;
     /**
      * returns the cached chi2 of the active portion of the graph.
      * In contrast to activeChi2() this functions considers the weighting
      * of the error according to the robustification of the error functions.
      */
-    number_t activeRobustChi2() const;
+    double activeRobustChi2() const;
 
     //! verbose information during optimization
     bool verbose()  const {return _verbose;}
@@ -259,10 +261,10 @@ namespace g2o {
 
     /**
      * update the estimate of the active vertices 
-     * @param update: the number_t vector containing the stacked
+     * @param update: the double vector containing the stacked
      * elements of the increments on the vertices.
      */
-    void update(const number_t* update);
+    void update(const double* update);
 
     /**
        returns the set of batch statistics about the optimisation

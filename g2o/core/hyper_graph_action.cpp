@@ -31,7 +31,6 @@
 
 
 #include <iostream>
-#include <list>
 
 namespace g2o {
   using namespace std;
@@ -54,7 +53,7 @@ namespace g2o {
 
   HyperGraphAction* HyperGraphAction::operator()(const HyperGraph*, Parameters*)
   {
-    return nullptr;
+    return 0;
   }
 
   HyperGraphElementAction::Parameters::~Parameters()
@@ -74,12 +73,12 @@ namespace g2o {
 
   HyperGraphElementAction* HyperGraphElementAction::operator()(HyperGraph::HyperGraphElement* , HyperGraphElementAction::Parameters* )
   {
-    return nullptr;
+    return 0;
   }
   
   HyperGraphElementAction* HyperGraphElementAction::operator()(const HyperGraph::HyperGraphElement* , HyperGraphElementAction::Parameters* )
   {
-    return nullptr;
+    return 0;
   }
   
   HyperGraphElementAction::~HyperGraphElementAction()
@@ -103,7 +102,7 @@ namespace g2o {
     ActionMap::iterator it=_actionMap.find(typeid(*element).name());
     //cerr << typeid(*element).name() << endl;
     if (it==_actionMap.end())
-      return nullptr;
+      return 0;
     HyperGraphElementAction* action=it->second;
     return (*action)(element, params);
   }
@@ -112,7 +111,7 @@ namespace g2o {
   {
     ActionMap::iterator it=_actionMap.find(typeid(*element).name());
     if (it==_actionMap.end())
-      return nullptr;
+      return 0;
     HyperGraphElementAction* action=it->second;
     return (*action)(element, params);
   }
@@ -171,7 +170,7 @@ namespace g2o {
     HyperGraphElementAction::ActionMap::iterator it=_actionMap.find(name);
     if (it!=_actionMap.end())
       return it->second;
-    return nullptr;
+    return 0;
   }
 
   bool HyperGraphActionLibrary::registerAction(HyperGraphElementAction* action)
@@ -182,7 +181,7 @@ namespace g2o {
       collection = dynamic_cast<HyperGraphElementActionCollection*>(oldAction);
       if (! collection) {
         cerr << __PRETTY_FUNCTION__ << ": fatal error, a collection is not at the first level in the library" << endl;
-        return false;
+        return 0;
       }
     }
     if (! collection) {

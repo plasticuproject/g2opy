@@ -1,4 +1,4 @@
-add_library(deprecated_types_slam3d ${G2O_LIB_TYPE}
+ADD_LIBRARY(deprecated_types_slam3d ${G2O_LIB_TYPE}
   se3quat_gradients.cpp
   se3quat_gradients.h
   vertex_se3_quat.cpp
@@ -26,18 +26,14 @@ add_library(deprecated_types_slam3d ${G2O_LIB_TYPE}
   g2o_deprecated_types_slam3d_api.h
 )
 
-set_target_properties(deprecated_types_slam3d PROPERTIES OUTPUT_NAME ${LIB_PREFIX}deprecated_types_slam3d)
-if (APPLE)
-  set_target_properties(deprecated_types_slam3d PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-target_link_libraries(deprecated_types_slam3d ${OPENGL_gl_LIBRARY} core types_slam3d)
+SET_TARGET_PROPERTIES(deprecated_types_slam3d PROPERTIES OUTPUT_NAME ${LIB_PREFIX}deprecated_types_slam3d)
+TARGET_LINK_LIBRARIES(deprecated_types_slam3d ${OPENGL_gl_LIBRARY} core types_slam3d)
 
-install(TARGETS deprecated_types_slam3d
-  RUNTIME DESTINATION ${RUNTIME_DESTINATION}
-  LIBRARY DESTINATION ${LIBRARY_DESTINATION}
-  ARCHIVE DESTINATION ${ARCHIVE_DESTINATION}
-  INCLUDES DESTINATION ${INCLUDES_DESTINATION}
-  )
+INSTALL(TARGETS deprecated_types_slam3d
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
 
-file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-install(FILES ${headers} DESTINATION ${INCLUDES_INSTALL_DIR}/types/deprecated/slam3d)
+FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/types/deprecated/slam3d)

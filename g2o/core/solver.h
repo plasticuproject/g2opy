@@ -28,6 +28,7 @@
 #define G2O_SOLVER_H
 
 #include "hyper_graph.h"
+#include "batch_stats.h"
 #include "sparse_block_matrix.h"
 #include "g2o_core_api.h"
 #include <cstddef>
@@ -74,7 +75,7 @@ namespace g2o {
        * computes the block diagonal elements of the pattern specified in the input
        * and stores them in given SparseBlockMatrix
        */
-      virtual bool computeMarginals(SparseBlockMatrix<MatrixX>& spinv, const std::vector<std::pair<int, int> >& blockIndices) = 0;
+      virtual bool computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, const std::vector<std::pair<int, int> >& blockIndices) = 0;
 
       /**
        * update the system while performing Levenberg, i.e., modifying the diagonal
@@ -84,7 +85,7 @@ namespace g2o {
        * If backup is true, then the solver should store a backup of the diagonal, which
        * can be restored by restoreDiagonal()
        */
-      virtual bool setLambda(number_t lambda, bool backup = false) = 0;
+      virtual bool setLambda(double lambda, bool backup = false) = 0;
 
       /**
        * restore a previosly made backup of the diagonal
@@ -92,11 +93,11 @@ namespace g2o {
       virtual void restoreDiagonal() = 0;
 
       //! return x, the solution vector
-      number_t* x() { return _x;}
-      const number_t* x() const { return _x;}
+      double* x() { return _x;}
+      const double* x() const { return _x;}
       //! return b, the right hand side of the system
-      number_t* b() { return _b;}
-      const number_t* b() const { return _b;}
+      double* b() { return _b;}
+      const double* b() const { return _b;}
 
       //! return the size of the solution vector (x) and b
       size_t vectorSize() const { return _xSize;}
@@ -133,8 +134,8 @@ namespace g2o {
 
     protected:
       SparseOptimizer* _optimizer;
-      number_t* _x;
-      number_t* _b;
+      double* _x;
+      double* _b;
       size_t _xSize, _maxXSize;
       bool _isLevenberg; ///< the system we gonna solve is a Levenberg-Marquardt system
       size_t _additionalVectorSpace;

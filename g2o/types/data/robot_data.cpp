@@ -38,12 +38,12 @@ namespace g2o {
   {
   }
 
-  void RobotData::setTimestamp(number_t ts)
+  void RobotData::setTimestamp(double ts)
   {
     _timestamp = ts;
   }
 
-  void RobotData::setLoggerTimestamp(number_t ts)
+  void RobotData::setLoggerTimestamp(double ts)
   {
     _loggerTimestamp = ts;
   }

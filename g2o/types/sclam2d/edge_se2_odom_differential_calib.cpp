@@ -40,7 +40,7 @@ namespace g2o {
 
   bool EdgeSE2OdomDifferentialCalib::read(std::istream& is)
   {
-    number_t vl, vr, dt;
+    double vl, vr, dt;
     is >> vl >> vr >> dt;
     VelocityMeasurement vm(vl, vr, dt);
     setMeasurement(vm);
@@ -71,7 +71,7 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE2OdomDifferentialCalibDrawAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* )
   {
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     EdgeSE2OdomDifferentialCalib* e = static_cast<EdgeSE2OdomDifferentialCalib*>(element);
     VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
     VertexSE2* toEdge   = static_cast<VertexSE2*>(e->vertex(1));

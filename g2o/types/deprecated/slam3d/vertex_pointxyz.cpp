@@ -37,7 +37,7 @@ namespace deprecated {
   // TRACK VERTEX
 
   bool VertexPointXYZ::read(std::istream& is) {
-    Vector3 lv;
+    Eigen::Vector3d lv;
     for (int i=0; i<3; i++)
       is >> lv[i];
     setEstimate(lv);
@@ -45,7 +45,7 @@ namespace deprecated {
   }
 
   bool VertexPointXYZ::write(std::ostream& os) const {
-    const Vector3& lv = estimate();
+    const Eigen::Vector3d& lv = estimate();
     for (int i=0; i<3; i++){
       os << lv[i] << " ";
     }
@@ -73,7 +73,7 @@ namespace deprecated {
                      HyperGraphElementAction::Parameters* params ){
 
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
 
     refreshPropertyPtrs(params);
     if (! _previousParams)
@@ -106,11 +106,11 @@ namespace deprecated {
   HyperGraphElementAction* VertexPointXYZWriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_ )
   {
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
     if (!params->os){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified" << std::endl;
-      return nullptr;
+      return 0;
     }
 
     VertexPointXYZ* v = static_cast<VertexPointXYZ*>(element);

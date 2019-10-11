@@ -152,5 +152,10 @@ int main()
   // freeing the graph memory
   optimizer.clear();
 
+  // destroy all the singletons
+  Factory::destroy();
+  OptimizationAlgorithmFactory::destroy();
+  HyperGraphActionLibrary::destroy();
+
   return 0;
 }

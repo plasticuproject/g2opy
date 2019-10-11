@@ -62,12 +62,12 @@ namespace g2o {
         return true;
       }
 
-      bool solve(const SparseBlockMatrix<MatrixType>& A, number_t* x, number_t* b)
+      bool solve(const SparseBlockMatrix<MatrixType>& A, double* x, double* b)
       {
         int n = A.cols();
         int m = A.cols();
 
-        MatrixX& H = _H;
+        MatrixXD& H = _H;
         if (H.cols() != n) {
           H.resize(n, m);
           _reset = true;
@@ -102,8 +102,8 @@ namespace g2o {
         }
 
         // solving via Cholesky decomposition
-        VectorX::MapType xvec(x, m);
-        VectorX::ConstMapType bvec(b, n);
+        VectorXD::MapType xvec(x, m);
+        VectorXD::ConstMapType bvec(b, n);
         _cholesky.compute(H);
         if (_cholesky.isPositive()) {
           xvec = _cholesky.solve(bvec);
@@ -114,8 +114,8 @@ namespace g2o {
 
     protected:
       bool _reset;
-      MatrixX _H;
-      Eigen::LDLT<MatrixX> _cholesky;
+      MatrixXD _H;
+      Eigen::LDLT<MatrixXD> _cholesky;
 
   };
 

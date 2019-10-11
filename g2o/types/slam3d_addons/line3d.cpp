@@ -24,16 +24,24 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "line3d.h"
+#include <iostream>
 
-#include "g2o/stuff/misc.h"
+#include "line3d.h"
 
 namespace g2o {
 
   using namespace std;
+  using namespace Eigen;
 
-  static inline Matrix3 _skew(const Vector3& t) {
-    Matrix3 S;
+  static inline void _skew(Matrix3d& S, const Vector3d& t) {
+    S <<
+           0, -t.z(),  t.y(),
+       t.z(),      0, -t.x(),
+      -t.y(),  t.x(),      0;
+  }
+
+  static inline Matrix3d _skew(const Vector3d& t) {
+    Matrix3d S;
     S <<
            0, -t.z(),  t.y(),
        t.z(),      0, -t.x(),
@@ -42,39 +50,39 @@ namespace g2o {
   }
 
 
-  Vector6 Line3D::toCartesian() const {
-    Vector6 cartesian;
+  Vector6d Line3D::toCartesian() const {
+    Vector6d cartesian;
     cartesian.tail<3>() = d()/d().norm();
-    Matrix3 W = -_skew(d());
-    number_t damping = cst(1e-9);
-    Matrix3 A = W.transpose()*W + (Matrix3::Identity()*damping);
+    Eigen::Matrix3d W = -_skew(d());
+    double damping = 1e-9;
+    Eigen::Matrix3d A = W.transpose()*W + (Eigen::Matrix3d::Identity()*damping);
     cartesian.head<3>() = A.ldlt().solve(W.transpose()*w());
     return cartesian;
   }
 
-  Line3D operator*(const Isometry3& t, const Line3D& line){
-    Matrix6 A = Matrix6::Zero();
+  Line3D operator*(const Eigen::Isometry3d& t, const Line3D& line){
+    Matrix6d A = Matrix6d::Zero();
     A.block<3, 3>(0, 0) = t.linear();
     A.block<3, 3>(0, 3) = _skew(t.translation())*t.linear();
     A.block<3, 3>(3, 3) = t.linear();
-    Vector6 v = (Vector6)line;
+    Vector6d v = (Vector6d)line;
     return Line3D(A*v);
   }
   
   namespace internal {
-    Vector6 transformCartesianLine(const Isometry3& t, const Vector6& line) {
-      Vector6 l;
+    Vector6d transformCartesianLine(const Eigen::Isometry3d& t, const Vector6d& line) {
+      Vector6d l;
       l.head<3>() = t*line.head<3>();
       l.tail<3>() = t.linear()*line.tail<3>();
       return normalizeCartesianLine(l);
     }
 
-    Vector6 normalizeCartesianLine(const Vector6& line) {
-      Vector3 p0 = line.head<3>();
-      Vector3 d0 = line.tail<3>();
+    Vector6d normalizeCartesianLine(const Vector6d& line) {
+      Vector3d p0 = line.head<3>();
+      Vector3d d0 = line.tail<3>();
       d0.normalize();
       p0 -= d0*(d0.dot(p0));
-      Vector6 nl;
+      Vector6d nl;
       nl.head<3>() = p0;
       nl.tail<3>() = d0;
       return nl;

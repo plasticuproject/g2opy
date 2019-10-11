@@ -87,7 +87,7 @@ namespace g2o {
   HyperGraphElementAction* VertexTagDrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                  HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams){

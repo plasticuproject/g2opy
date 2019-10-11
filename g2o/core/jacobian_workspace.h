@@ -52,7 +52,7 @@ namespace g2o {
   class G2O_CORE_API JacobianWorkspace
   {
     public:
-      typedef std::vector<VectorX, Eigen::aligned_allocator<VectorX> >      WorkspaceVector;
+      typedef std::vector<VectorXD, Eigen::aligned_allocator<VectorXD> >      WorkspaceVector;
 
     public:
       JacobianWorkspace();
@@ -81,7 +81,7 @@ namespace g2o {
       /**
        * return the workspace for a vertex in an edge
        */
-      number_t* workspaceForVertex(int vertexIndex)
+      double* workspaceForVertex(int vertexIndex)
       {
         assert(vertexIndex >= 0 && (size_t)vertexIndex < _workspace.size() && "Index out of bounds");
         return _workspace[vertexIndex].data();

@@ -36,7 +36,6 @@
 #include "base_edge.h"
 #include "robust_kernel.h"
 #include "g2o/config.h"
-#include "g2o/stuff/misc.h"
 #include "dynamic_aligned_buffer.hpp"
 
 namespace g2o {
@@ -55,7 +54,7 @@ namespace g2o {
        * \brief helper for mapping the Hessian memory of the upper triangular block
        */
       struct HessianHelper {
-        Eigen::Map<MatrixX> matrix;     ///< the mapped memory
+        Eigen::Map<MatrixXD> matrix;     ///< the mapped memory
         bool transposed;          ///< the block has to be transposed
         HessianHelper() : matrix(0, 0, 0), transposed(false) {}
       };
@@ -63,10 +62,10 @@ namespace g2o {
     public:
       static const int Dimension = BaseEdge<D,E>::Dimension;
       typedef typename BaseEdge<D,E>::Measurement Measurement;
-      typedef MatrixX::MapType JacobianType;
+      typedef MatrixXD::MapType JacobianType;
       typedef typename BaseEdge<D,E>::ErrorVector ErrorVector;
       typedef typename BaseEdge<D,E>::InformationType InformationType;
-      typedef Eigen::Map<MatrixX, MatrixX::Flags & Eigen::PacketAccessBit ? Eigen::Aligned : Eigen::Unaligned > HessianBlockType;
+      typedef Eigen::Map<MatrixXD, MatrixXD::Flags & Eigen::PacketAccessBit ? Eigen::Aligned : Eigen::Unaligned > HessianBlockType;
 
       BaseMultiEdge() : BaseEdge<D,E>()
       {
@@ -86,7 +85,7 @@ namespace g2o {
 
       virtual void constructQuadraticForm() ;
 
-      virtual void mapHessianMemory(number_t* d, int i, int j, bool rowMajor);
+      virtual void mapHessianMemory(double* d, int i, int j, bool rowMajor);
 
       using BaseEdge<D,E>::computeError;
 
@@ -117,7 +116,7 @@ namespace g2o {
        * \brief helper for mapping the Hessian memory of the upper triangular block
        */
       struct HessianHelper {
-        Eigen::Map<MatrixX> matrix;     ///< the mapped memory
+        Eigen::Map<MatrixXD> matrix;     ///< the mapped memory
         bool transposed;          ///< the block has to be transposed
         HessianHelper() : matrix(0, 0, 0), transposed(false) {}
       };
@@ -125,10 +124,10 @@ namespace g2o {
     public:
       static const int Dimension = BaseEdge<-1,E>::Dimension;
       typedef typename BaseEdge<-1,E>::Measurement Measurement;
-      typedef MatrixX::MapType JacobianType;
+      typedef MatrixXD::MapType JacobianType;
       typedef typename BaseEdge<-1,E>::ErrorVector ErrorVector;
       typedef typename BaseEdge<-1,E>::InformationType InformationType;
-      typedef Eigen::Map<MatrixX, MatrixX::Flags & Eigen::PacketAccessBit ? Eigen::Aligned : Eigen::Unaligned > HessianBlockType;
+      typedef Eigen::Map<MatrixXD, MatrixXD::Flags & Eigen::PacketAccessBit ? Eigen::Aligned : Eigen::Unaligned > HessianBlockType;
 
       BaseMultiEdge() : BaseEdge<-1,E>()
     {
@@ -149,7 +148,7 @@ namespace g2o {
 
       virtual void constructQuadraticForm() ;
 
-      virtual void mapHessianMemory(number_t* d, int i, int j, bool rowMajor);
+      virtual void mapHessianMemory(double* d, int i, int j, bool rowMajor);
 
       using BaseEdge<-1,E>::computeError;
 

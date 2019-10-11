@@ -48,7 +48,7 @@ namespace deprecated {
   bool VertexSE3::read(std::istream& is)
   {
 
-    Vector7 est;
+    Vector7d est;
     for (int i=0; i<7; i++)
       is  >> est[i];
     setEstimate(SE3Quat(est));
@@ -67,11 +67,11 @@ namespace deprecated {
 
   HyperGraphElementAction* VertexSE3WriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
     if (!params->os){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, no valid os specified" << std::endl;
-      return nullptr;
+      return 0;
     }
     
     VertexSE3* v =  static_cast<VertexSE3*>(element);
@@ -121,7 +121,7 @@ namespace deprecated {
   HyperGraphElementAction* VertexSE3DrawAction::operator()(HyperGraph::HyperGraphElement* element, 
                  HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     if (! _cacheDrawActions){
       _cacheDrawActions = HyperGraphActionLibrary::instance()->actionByName("draw");
     }
@@ -138,7 +138,7 @@ namespace deprecated {
     glColor3f(0.5f,0.5f,0.8f);
     glPushMatrix();
     glTranslatef((float)that->estimate().translation().x(),(float)that->estimate().translation().y(),(float)that->estimate().translation().z());
-    AngleAxis aa(that->estimate().rotation());
+    AngleAxisd aa(that->estimate().rotation());
     glRotatef((float)RAD2DEG(aa.angle()),(float)aa.axis().x(),(float)aa.axis().y(),(float)aa.axis().z());
     if (_triangleX && _triangleY){
       drawTriangle(_triangleX->value(), _triangleY->value());

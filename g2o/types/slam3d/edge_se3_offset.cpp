@@ -51,7 +51,7 @@ namespace g2o {
     ParameterVector pv(2);
     pv[0]=_offsetFrom;
     resolveCache(_cacheFrom, (OptimizableGraph::Vertex*)_vertices[0],"CACHE_SE3_OFFSET",pv);
-    pv[0]=_offsetTo;
+    pv[1]=_offsetTo;
     resolveCache(_cacheTo, (OptimizableGraph::Vertex*)_vertices[1],"CACHE_SE3_OFFSET",pv);
     return (_cacheFrom && _cacheTo);
   }
@@ -64,11 +64,11 @@ namespace g2o {
     if (! setParameterId(1,pidTo))
       return false;
 
-    Vector7 meas;
+    Vector7d meas;
     for (int i=0; i<7; i++)
       is >> meas[i];
     // normalize the quaternion to recover numerical precision lost by storing as human readable text
-    Vector4::MapType(meas.data()+3).normalize();
+    Vector4D::MapType(meas.data()+3).normalize();
     setMeasurement(internal::fromVectorQT(meas));
 
     if (is.bad()) {
@@ -90,7 +90,7 @@ namespace g2o {
   bool EdgeSE3Offset::write(std::ostream& os) const {
     os << parameter(0)->id() << " ";
     os << parameter(1)->id() << " ";
-    Vector7 meas=internal::toVectorQT(_measurement);
+    Vector7d meas=internal::toVectorQT(_measurement);
     for (int i=0; i<7; i++) os  << meas[i] << " ";
     for (int i=0; i<information().rows(); i++)
       for (int j=i; j<information().cols(); j++) {
@@ -100,12 +100,12 @@ namespace g2o {
   }
 
   void EdgeSE3Offset::computeError() {
-    Isometry3 delta=_inverseMeasurement * _cacheFrom->w2n() * _cacheTo->n2w();
+    Isometry3D delta=_inverseMeasurement * _cacheFrom->w2n() * _cacheTo->n2w();
     _error=internal::toVectorMQT(delta);
   }
 
   bool EdgeSE3Offset::setMeasurementFromState(){
-    Isometry3 delta = _cacheFrom->w2n() * _cacheTo->n2w();
+    Isometry3D delta = _cacheFrom->w2n() * _cacheTo->n2w();
     setMeasurement(delta);
     return true;
   }
@@ -115,13 +115,13 @@ namespace g2o {
 
     VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
     VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
-    Isometry3 E;
-    const Isometry3& Xi=from->estimate();
-    const Isometry3& Xj=to->estimate();
-    const Isometry3& Pi=_cacheFrom->offsetParam()->offset();
-    const Isometry3& Pj=_cacheTo->offsetParam()->offset();
-    const Isometry3& Z=_measurement;
-    // Matrix6 Ji, Jj;
+    Isometry3D E;
+    const Isometry3D& Xi=from->estimate();
+    const Isometry3D& Xj=to->estimate();
+    const Isometry3D& Pi=_cacheFrom->offsetParam()->offset();
+    const Isometry3D& Pj=_cacheTo->offsetParam()->offset();
+    const Isometry3D& Z=_measurement;
+    // Matrix6d Ji, Jj;
     // computeSE3Gradient(E, Ji , Jj,
     //                    Z, Pi, Xi, Pj, Xj);
     // cerr  << "Ji:" << endl;
@@ -135,7 +135,7 @@ namespace g2o {
     VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
     VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
 
-    Isometry3 virtualMeasurement = _cacheFrom->offsetParam()->offset() * measurement() * _cacheTo->offsetParam()->offset().inverse();
+    Isometry3D virtualMeasurement = _cacheFrom->offsetParam()->offset() * measurement() * _cacheTo->offsetParam()->offset().inverse();
 
     if (from_.count(from) > 0) {
       to->setEstimate(from->estimate() * virtualMeasurement);

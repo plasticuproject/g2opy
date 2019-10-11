@@ -65,7 +65,7 @@ namespace deprecated {
     if (! setParameterId(1,pidTo))
       return false;
 
-    Vector7 meas;
+    Vector7d meas;
     for (int i=0; i<7; i++) 
       is >> meas[i];
     setMeasurement(SE3Quat(meas));
@@ -117,8 +117,8 @@ namespace deprecated {
 
     VertexSE3 *from = static_cast<VertexSE3*>(_vertices[0]);
     VertexSE3 *to   = static_cast<VertexSE3*>(_vertices[1]);
-    Isometry3 E;
-    Isometry3 Z, Xi, Xj, Pi, Pj;
+    Eigen::Isometry3d E;
+    Eigen::Isometry3d Z, Xi, Xj, Pi, Pj;
     Xi=from->estimate().rotation().toRotationMatrix();
     Xi.translation()=from->estimate().translation();
     Xj=to->estimate().rotation().toRotationMatrix();
@@ -129,7 +129,7 @@ namespace deprecated {
     Pj.translation()=_cacheTo->offsetParam()->offset().translation();
     Z=_measurement.rotation().toRotationMatrix();
     Z.translation()=_measurement.translation();
-    // Matrix6 Ji, Jj;
+    // Matrix6d Ji, Jj;
     // computeSE3Gradient(E, Ji , Jj,
     //                    Z, Pi, Xi, Pj, Xj);
     // cerr  << "Ji:" << endl;

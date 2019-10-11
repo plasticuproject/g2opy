@@ -53,7 +53,7 @@ namespace g2o {
 
   bool EdgeSE2SensorCalib::read(std::istream& is)
   {
-    Vector3 p;
+    Vector3D p;
     is >> p(0) >> p(1) >> p(2);
     _measurement.fromVector(p);
     _inverseMeasurement=measurement().inverse();
@@ -68,7 +68,7 @@ namespace g2o {
 
   bool EdgeSE2SensorCalib::write(std::ostream& os) const
   {
-    Vector3 p = measurement().toVector();
+    Vector3D p = measurement().toVector();
     os << p(0) << " " << p(1) << " " << p(2);
     for (int i = 0; i < information().rows(); ++i)
       for (int j = i; j < information().cols(); ++j)
@@ -85,7 +85,7 @@ namespace g2o {
   HyperGraphElementAction* EdgeSE2SensorCalibDrawAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* )
   {
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
     EdgeSE2SensorCalib* e = static_cast<EdgeSE2SensorCalib*>(element);
     VertexSE2* fromEdge = static_cast<VertexSE2*>(e->vertex(0));
     VertexSE2* toEdge   = static_cast<VertexSE2*>(e->vertex(1));

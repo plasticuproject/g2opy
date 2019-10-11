@@ -89,9 +89,9 @@ namespace g2o{
 
   }
 
-  number_t SparseOptimizer::activeChi2( ) const
+  double SparseOptimizer::activeChi2( ) const
   {
-    number_t chi = 0.0;
+    double chi = 0.0;
     for (EdgeContainer::const_iterator it = _activeEdges.begin(); it != _activeEdges.end(); ++it) {
       const OptimizableGraph::Edge* e = *it;
       chi += e->chi2();
@@ -99,10 +99,10 @@ namespace g2o{
     return chi;
   }
 
-  number_t SparseOptimizer::activeRobustChi2() const
+  double SparseOptimizer::activeRobustChi2() const
   {
-    Vector3 rho;
-    number_t chi = 0.0;
+    Vector3D rho;
+    double chi = 0.0;
     for (EdgeContainer::const_iterator it = _activeEdges.begin(); it != _activeEdges.end(); ++it) {
       const OptimizableGraph::Edge* e = *it;
       if (e->robustKernel()) {
@@ -117,7 +117,7 @@ namespace g2o{
 
   OptimizableGraph::Vertex* SparseOptimizer::findGauge(){
     if (vertices().empty())
-      return nullptr;
+      return 0;
 
     int maxDim=0;
     for (HyperGraph::VertexIDMap::iterator it=vertices().begin(); it!=vertices().end(); ++it){
@@ -248,7 +248,7 @@ namespace g2o{
 #      ifndef NDEBUG
         int estimateDim = v->estimateDimension();
         if (estimateDim > 0) {
-          VectorX estimateData(estimateDim);
+          VectorXD estimateData(estimateDim);
           if (v->getEstimateData(estimateData.data()) == true) {
             int k;
             bool hasNan = arrayHasNaN(estimateData.data(), estimateDim, &k);
@@ -371,7 +371,7 @@ namespace g2o{
     }
 
     int cjIterations=0;
-    number_t cumTime=0;
+    double cumTime=0;
     bool ok=true;
 
     ok = _algorithm->init(online);
@@ -396,7 +396,7 @@ namespace g2o{
         cstat.numVertices = _activeVertices.size();
       }
       
-      number_t ts = get_monotonic_time();
+      double ts = get_monotonic_time();
       result = _algorithm->solve(i, online);
       ok = ( result == OptimizationAlgorithm::OK );
 
@@ -409,7 +409,7 @@ namespace g2o{
       }
 
       if (verbose()){
-        number_t dts = get_monotonic_time()-ts;
+        double dts = get_monotonic_time()-ts;
         cumTime += dts;
         if (! errorComputed)
           computeActiveErrors();
@@ -430,7 +430,7 @@ namespace g2o{
     return cjIterations;
   }
 
-  void SparseOptimizer::update(const number_t* update)
+  void SparseOptimizer::update(const double* update)
   {
     // update the graph by calling oplus on the vertices
     for (size_t i=0; i < _ivMap.size(); ++i) {
@@ -580,7 +580,7 @@ namespace g2o{
       _algorithm->setOptimizer(this);
   }
 
-  bool SparseOptimizer::computeMarginals(SparseBlockMatrix<MatrixX>& spinv, const std::vector<std::pair<int, int> >& blockIndices){
+  bool SparseOptimizer::computeMarginals(SparseBlockMatrix<MatrixXD>& spinv, const std::vector<std::pair<int, int> >& blockIndices){
     return _algorithm->computeMarginals(spinv, blockIndices);
   }
 

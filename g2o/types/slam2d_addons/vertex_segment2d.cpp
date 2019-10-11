@@ -41,7 +41,7 @@
 namespace g2o {
 
   VertexSegment2D::VertexSegment2D() :
-    BaseVertex<4, Vector4>()
+    BaseVertex<4, Vector4D>()
   {
     _estimate.setZero();
   }
@@ -64,12 +64,12 @@ namespace g2o {
 
   HyperGraphElementAction* VertexSegment2DWriteGnuplotAction::operator()(HyperGraph::HyperGraphElement* element, HyperGraphElementAction::Parameters* params_){
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
 
     WriteGnuplotAction::Parameters* params=static_cast<WriteGnuplotAction::Parameters*>(params_);
     if (!params->os){
       std::cerr << __PRETTY_FUNCTION__ << ": warning, on valid os specified" << std::endl;
-      return nullptr;
+      return 0;
     }
 
     VertexSegment2D* v =  static_cast<VertexSegment2D*>(element);
@@ -97,7 +97,7 @@ namespace g2o {
                      HyperGraphElementAction::Parameters* params_ ){
 
     if (typeid(*element).name()!=_typeName)
-      return nullptr;
+      return 0;
 
     refreshPropertyPtrs(params_);
     if (! _previousParams)

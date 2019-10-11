@@ -26,12 +26,10 @@
 
 #include "edge_se3_calib.h"
 
-#include "g2o/types/slam3d/vertex_se3.h"
-
 namespace g2o {
 
   EdgeSE3Calib::EdgeSE3Calib() :
-    BaseMultiEdge<6, Isometry3>()
+    BaseMultiEdge<6, Isometry3D>()
   {
     resize(3);
   }
@@ -45,7 +43,7 @@ namespace g2o {
   }
 
   bool EdgeSE3Calib::write(std::ostream& os) const {
-    Vector7 meas=g2o::internal::toVectorQT(_measurement);
+    Vector7d meas=g2o::internal::toVectorQT(_measurement);
     for (int i=0; i<7; i++) os  << meas[i] << " ";
     for (int i=0; i<information().rows(); i++)
       for (int j=i; j<information().cols(); j++) {
@@ -55,11 +53,11 @@ namespace g2o {
   }
 
   bool EdgeSE3Calib::read(std::istream& is) {
-    Vector7 meas;
+    Vector7d meas;
     for (int i=0; i<7; i++)
       is >> meas[i];
     // normalize the quaternion to recover numerical precision lost by storing as human readable text
-    Vector4::MapType(meas.data()+3).normalize();
+    Vector4D::MapType(meas.data()+3).normalize();
     setMeasurement(g2o::internal::fromVectorQT(meas));
 
     if (is.bad()) {

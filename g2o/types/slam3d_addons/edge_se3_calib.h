@@ -29,14 +29,16 @@
 
 #include "g2o_types_slam3d_addons_api.h"
 #include "g2o/core/base_multi_edge.h"
+#include "g2o/types/slam3d/vertex_se3.h"
 #include "g2o/types/slam3d/isometry3d_mappings.h"
+#include "Eigen/Geometry"
 
 namespace g2o
 {
   /**
    * \brief Landmark measurement that also calibrates an offset for the landmark measurement
    */
-  class EdgeSE3Calib : public BaseMultiEdge<6, Isometry3> //Avoid redefinition of BaseEdge in MSVC
+  class EdgeSE3Calib : public BaseMultiEdge<6, Isometry3D> //Avoid redefinition of BaseEdge in MSVC
   {
     public:
       G2O_TYPES_SLAM3D_ADDONS_API EIGEN_MAKE_ALIGNED_OPERATOR_NEW

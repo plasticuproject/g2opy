@@ -1,5 +1,5 @@
 # Look for csparse; note the difference in the directory specifications!
-find_path(CSPARSE_INCLUDE_DIR NAMES cs.h
+FIND_PATH(CSPARSE_INCLUDE_DIR NAMES cs.h
   PATHS
   /usr/include/suitesparse
   /usr/include
@@ -10,11 +10,9 @@ find_path(CSPARSE_INCLUDE_DIR NAMES cs.h
   /opt/local/include/ufsparse
   /usr/local/include/ufsparse
   /sw/include/ufsparse
-  PATH_SUFFIXES
-  suitesparse
   )
 
-find_library(CSPARSE_LIBRARY NAMES cxsparse libcxsparse
+FIND_LIBRARY(CSPARSE_LIBRARY NAMES cxsparse
   PATHS
   /usr/lib
   /usr/local/lib

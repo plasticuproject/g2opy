@@ -103,7 +103,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
       return true;
     }
 
-    bool solve(const SparseBlockMatrix<MatrixType>& A, number_t* x, number_t* b)
+    bool solve(const SparseBlockMatrix<MatrixType>& A, double* x, double* b)
     {
       fillCSparse(A, _symbolicDecomposition != 0);
       // perform symbolic cholesky once
@@ -114,15 +114,15 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
       if (_csWorkspaceSize < _ccsA->n) {
         _csWorkspaceSize = 2 * _ccsA->n;
         delete[] _csWorkspace;
-        _csWorkspace = new number_t[_csWorkspaceSize];
+        _csWorkspace = new double[_csWorkspaceSize];
         delete[] _csIntWorkspace;
         _csIntWorkspace = new int[2*_csWorkspaceSize];
       }
 
-      number_t t=get_monotonic_time();
+      double t=get_monotonic_time();
       // _x = _b for calling csparse
       if (x != b)
-        memcpy(x, b, _ccsA->n * sizeof(number_t));
+        memcpy(x, b, _ccsA->n * sizeof(double));
       int ok = csparse_extension::cs_cholsolsymb(_ccsA, x, _symbolicDecomposition, _csWorkspace, _csIntWorkspace);
       if (! ok) {
         if (_writeDebug) {
@@ -141,7 +141,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
       return ok != 0;
     }
 
-    bool solveBlocks(number_t**& blocks, const SparseBlockMatrix<MatrixType>& A) {
+    bool solveBlocks(double**& blocks, const SparseBlockMatrix<MatrixType>& A) {
       fillCSparse(A, _symbolicDecomposition != 0);
       // perform symbolic cholesky once
       if (_symbolicDecomposition == 0) {
@@ -152,17 +152,17 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
       if (_csWorkspaceSize < _ccsA->n) {
         _csWorkspaceSize = 2 * _ccsA->n;
         delete[] _csWorkspace;
-        _csWorkspace = new number_t[_csWorkspaceSize];
+        _csWorkspace = new double[_csWorkspaceSize];
         delete[] _csIntWorkspace;
         _csIntWorkspace = new int[2*_csWorkspaceSize];
       }
 
       if (! blocks){
-        blocks=new number_t*[A.rows()];
-        number_t **block=blocks;
+        blocks=new double*[A.rows()];
+        double **block=blocks;
         for (size_t i=0; i < A.rowBlockIndices().size(); ++i){
           int dim = A.rowsOfBlock(i) * A.colsOfBlock(i);
-          *block = new number_t [dim];
+          *block = new double [dim];
           block++;
         }
       }
@@ -187,7 +187,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
       return ok != 0;
     }
 
-    virtual bool solvePattern(SparseBlockMatrix<MatrixX>& spinv, const std::vector<std::pair<int, int> >& blockIndices, const SparseBlockMatrix<MatrixType>& A) {
+    virtual bool solvePattern(SparseBlockMatrix<MatrixXD>& spinv, const std::vector<std::pair<int, int> >& blockIndices, const SparseBlockMatrix<MatrixType>& A) {
       fillCSparse(A, _symbolicDecomposition != 0);
       // perform symbolic cholesky once
       if (_symbolicDecomposition == 0) {
@@ -198,7 +198,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
       if (_csWorkspaceSize < _ccsA->n) {
         _csWorkspaceSize = 2 * _ccsA->n;
         delete[] _csWorkspace;
-        _csWorkspace = new number_t[_csWorkspaceSize];
+        _csWorkspace = new double[_csWorkspaceSize];
         delete[] _csIntWorkspace;
         _csIntWorkspace = new int[2*_csWorkspaceSize];
       }
@@ -235,7 +235,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
   protected:
     css* _symbolicDecomposition;
     int _csWorkspaceSize;
-    number_t* _csWorkspace;
+    double* _csWorkspace;
     int* _csIntWorkspace;
     CSparseExt* _ccsA;
     bool _blockOrdering;
@@ -245,7 +245,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
 
     void computeSymbolicDecomposition(const SparseBlockMatrix<MatrixType>& A)
     {
-      number_t t=get_monotonic_time();
+      double t=get_monotonic_time();
       if (! _blockOrdering) {
         _symbolicDecomposition = cs_schol (1, _ccsA) ;
       } else {
@@ -328,7 +328,7 @@ class LinearSolverCSparse : public LinearSolverCCS<MatrixType>
           delete[] _ccsA->x;
           delete[] _ccsA->i;
           _ccsA->i = new int[_ccsA->nzmax];
-          _ccsA->x = new number_t[_ccsA->nzmax];
+          _ccsA->x = new double[_ccsA->nzmax];
         }
       }
       _ccsA->m = m;

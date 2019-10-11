@@ -42,6 +42,5 @@
 #include "edge_pointxy.h"
 #include "edge_se2_twopointsxy.h"
 #include "edge_se2_lotsofxy.h"
-#include "edge_xy_prior.h"
 
 #endif

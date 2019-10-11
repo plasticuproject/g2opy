@@ -1,9 +1,9 @@
-add_executable(ba_anchored_inverse_depth_demo
+ADD_EXECUTABLE(ba_anchored_inverse_depth_demo
   ba_anchored_inverse_depth_demo.cpp
 )
 
-include_directories(${CHOLMOD_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
 
-target_link_libraries(ba_anchored_inverse_depth_demo core solver_cholmod types_sba)
+TARGET_LINK_LIBRARIES(ba_anchored_inverse_depth_demo core solver_cholmod types_sba)
 
 
